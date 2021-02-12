@@ -1,0 +1,38 @@
+package com.plus.plus.karma.model
+
+import io.circe._
+import io.circe.generic.semiauto._
+
+case class GithubSearchItemLabel(id: Long,
+                                 url: String,
+                                 name: String,
+                                 color: String)
+
+object GithubSearchItemLabel {
+  implicit val codec: Codec[GithubSearchItemLabel] = deriveCodec
+}
+
+case class GithubSearchItem(url: String,
+                            repository_url: String,
+                            labels_url: String,
+                            comments_url: String,
+                            events_url: String,
+                            html_url: String,
+                            id: Long,
+                            number: Int,
+                            title: String,
+                            state: String,
+                            locked: false,
+                            body: String)
+
+object GithubSearchItem {
+  implicit val codec: Codec[GithubSearchItem] = deriveCodec
+}
+
+case class GithubSearch(total_count: Int,
+                        incomplete_results: Boolean,
+                        items: List[GithubSearchItem])
+
+object GithubSearch {
+  implicit val codec: Codec[GithubSearch] = deriveCodec
+}

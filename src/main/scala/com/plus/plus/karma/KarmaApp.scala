@@ -1,8 +1,10 @@
 package com.plus.plus.karma
 
 import cats.effect._
+import cats.implicits._
 import cats.syntax.all._
 
+import com.plus.plus.karma.di.ApplicationModule
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import org.http4s.server.Router
@@ -11,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object KarmaApp extends IOApp{
   override def run(args: List[String]): IO[ExitCode] = {
-    ApplicationConfig.load *> startServer
+    ApplicationConfig.load >>= startServer
   }
 
   private def startServer(applicationConfig: ApplicationConfig): IO[ExitCode] = {
