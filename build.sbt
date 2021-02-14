@@ -22,6 +22,7 @@ libraryDependencies ++= {
   val pureConfigVersion = "0.14.0"
   val macwireVersion = "2.3.7"
   val refinedVersion = "0.9.20"
+  val scalaCacheVersion = "0.28.0"
 
   Seq(
     "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -42,6 +43,10 @@ libraryDependencies ++= {
     "org.http4s" %% "http4s-circe" % http4sVersion,
     "org.http4s" %% "http4s-core" % http4sVersion,
     "org.http4s" %% "http4s-circe" % http4sVersion,
+
+    "com.github.cb372" %% "scalacache-core" % scalaCacheVersion,
+    "com.github.cb372" %% "scalacache-caffeine" % scalaCacheVersion,
+    "com.github.cb372" %% "scalacache-cats-effect" % scalaCacheVersion,
 
     "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
 

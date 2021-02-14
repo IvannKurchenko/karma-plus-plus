@@ -32,7 +32,7 @@ class FeedService[F[_]: Sync: ContextShift: Timer](githubService: GithubService[
         case (language, _) => normalize(language).startsWith(term)
       }.toList.map {
         case (name, language) =>
-          val description = s"${language.`type`} programming language in GitHub"
+          val description = s"${language.`type`} language in GitHub"
           KarmaSuggestItem(name, KarmaFeedItemSources.Github, description)
       }
     }

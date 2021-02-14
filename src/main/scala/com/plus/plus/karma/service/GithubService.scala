@@ -2,11 +2,14 @@ package com.plus.plus.karma.service
 
 import cats.syntax.functor._
 import cats.effect._
+
 import org.http4s.circe._
 import org.http4s.client.Client
-
 import com.plus.plus.karma.model.github._
 import com.plus.plus.karma.utils.http4s._
+
+import scalacache.{Cache, Mode}
+import scalacache.caffeine.CaffeineCache
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -15,7 +18,9 @@ import java.nio.charset.StandardCharsets
  * Performs search over github using search API.
  * See for more details: https://docs.github.com/en/rest/reference/search#search-issues-and-pull-requests
  */
-class GithubService[F[_]: Sync: Timer: ContextShift](httpClient: Client[F]) {
+class GithubService[F[_]: Mode: Sync: Timer: ContextShift](httpClient: Client[F]) {
+
+  implicit val languageIndexCache: Cache[GithubLanguageIndex] = CaffeineCache[GithubLanguageIndex]
 
   /**
    * Searches for `help wanted` issues for specific language.
@@ -37,6 +42,8 @@ class GithubService[F[_]: Sync: Timer: ContextShift](httpClient: Client[F]) {
    */
   def languages: F[GithubLanguageIndex] = {
     val url = s"https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml"
-    httpClient.expect[GithubLanguageIndex](url)(yamlOf[F, GithubLanguageIndex])
+    scalacache.memoization.memoizeF(None) {
+      httpClient.expect[GithubLanguageIndex](url)(yamlOf[F, GithubLanguageIndex])
+    }
   }
 }

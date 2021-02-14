@@ -9,6 +9,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import org.http4s.server.Router
+import scalacache.Mode
 
 import scala.concurrent.ExecutionContext
 
@@ -37,6 +38,8 @@ object KarmaApp extends IOApp{
 
   private def applicationModule: ApplicationModule[IO] = {
     implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
+    implicit val mode: Mode[IO] = scalacache.CatsEffect.modes.async
+
     val module = new ApplicationModule[IO]
     module
   }
