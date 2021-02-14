@@ -11,11 +11,11 @@ case class ApplicationConfig(
 )
 
 object ApplicationConfig {
-  def load: IO[ApplicationConfig] = {
+  val load: IO[ApplicationConfig] = {
     def fail(failure: ConfigReaderFailures) = {
       IO.raiseError(new Exception(failure.toString()))
     }
 
-    ConfigSource.default.at("application").load[ApplicationConfig].fold(fail, IO.pure)
+    ConfigSource.defaultApplication.at("application").load[ApplicationConfig].fold(fail, IO.pure)
   }
 }

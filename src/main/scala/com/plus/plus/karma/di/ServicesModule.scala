@@ -1,12 +1,11 @@
 package com.plus.plus.karma.di
 
-import cats.effect.{ContextShift, IO, Timer}
-import com.plus.plus.karma.service.GithubService
+import cats.effect.{Async, ContextShift, Timer}
+import com.plus.plus.karma.service.{FeedService, GithubService}
 import com.softwaremill.macwire.wire
 
-class ServicesModule(httpClientModule: HttpClientModule)
-                    (implicit cs: ContextShift[IO], val timer: Timer[IO]) {
+class ServicesModule[F[_]: ContextShift: Timer: Async](httpClientModule: HttpClientModule[F]) {
   import httpClientModule._
-
-  val GithubService = wire[GithubService]
+  val githubService = wire[GithubService[F]]
+  val feedService = wire[FeedService[F]]
 }

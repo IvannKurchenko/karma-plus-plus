@@ -2,11 +2,12 @@ package com.plus.plus.karma.http
 
 import cats.effect._
 import org.http4s._
-import org.http4s.dsl.io._
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.http4s.dsl.Http4sDsl
 
-class UiRoutes(implicit cs: ContextShift[IO], val timer: Timer[IO]) {
-  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+class UiRoutes[F[_]: ContextShift: Timer: Async](implicit dsl: Http4sDsl[F]) {
+  import dsl._
+
+  val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root => Ok("")
   }
 }

@@ -2,34 +2,42 @@ package com.plus.plus.karma
 
 import cats.effect._
 import cats.implicits._
-import cats.syntax.all._
-
+import cats.syntax._
 import com.plus.plus.karma.di.ApplicationModule
+import org.http4s.dsl
+import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import org.http4s.server.Router
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 object KarmaApp extends IOApp{
   override def run(args: List[String]): IO[ExitCode] = {
     ApplicationConfig.load >>= startServer
   }
 
-  private def startServer(applicationConfig: ApplicationConfig): IO[ExitCode] = {
-    val module = new ApplicationModule
-
-    val ui = module.uiRoutes.routes
-    val api = module.feedRoutes.routes <+> module.suggestionRoutes.routes
-
-    val httpApp = Router("/" -> ui, "/api" -> api).orNotFound
-
-    BlazeServerBuilder[IO](global)
+  private val startServer: ApplicationConfig => IO[ExitCode] = { applicationConfig =>
+    BlazeServerBuilder[IO](ExecutionContext.global)
       .bindHttp(applicationConfig.port, applicationConfig.host)
       .withHttpApp(httpApp)
       .serve
       .compile
       .drain
       .as(ExitCode.Success)
+  }
+
+  private def httpApp = {
+    val module = applicationModule
+
+    val ui = module.routes.uiRoutes.routes
+    val api = module.routes.feedRoutes.routes
+    Router("/" -> ui, "/api" -> api).orNotFound
+  }
+
+  private def applicationModule: ApplicationModule[IO] = {
+    implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
+    val module = new ApplicationModule[IO]
+    module
   }
 }
