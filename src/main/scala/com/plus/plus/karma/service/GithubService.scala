@@ -21,8 +21,9 @@ class GithubService[F[_]: Sync: Timer: ContextShift](httpClient: Client[F]) {
    * Searches for `help wanted` issues for specific language.
    * Search request, like: https://api.github.com/search/issues?q=ENCODE(state:open language:$language label:"help wanted")
    */
-  def searchIssues(language: String): F[GithubSearch] = {
-    val query = s"""state:open language:$language label:"help wanted""""
+  def searchIssues(languages: List[String]): F[GithubSearch] = {
+    val languageQuery = languages.map(language => s"language:$language").mkString(" ")
+    val query = s"""state:open $languageQuery label:"help wanted""""
     val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString)
     val url = s"https://api.github.com/search/issues?q=$encodedQuery&sort=created"
     httpClient.expect[GithubSearch](url)(jsonOf[F, GithubSearch])

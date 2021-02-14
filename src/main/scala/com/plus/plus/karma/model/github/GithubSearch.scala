@@ -32,7 +32,7 @@ case class GithubSearchItem(url: URI,
   def asKarmaFeedItem: KarmaFeedItem = {
     KarmaFeedItem(
       source = KarmaFeedItemSources.Github,
-      title = title,
+      name = title,
       description = body,
       link = url,
       parentLink = repository_url
