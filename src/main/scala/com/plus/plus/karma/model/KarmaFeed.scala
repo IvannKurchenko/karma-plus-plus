@@ -33,9 +33,10 @@ object KarmaFeedRequest {
 
 case class KarmaFeedItem(source: KarmaFeedItemSource,
                          name: String,
-                         description: String,
+                         description: Option[String],
                          link: URI,
-                         parentLink: URI)
+                         parentLink: URI,
+                         created: Long)
 
 object KarmaFeedItem {
   implicit val codec: Codec[KarmaFeedItem] = deriveCodec

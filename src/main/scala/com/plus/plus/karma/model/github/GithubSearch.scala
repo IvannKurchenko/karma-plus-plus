@@ -2,11 +2,11 @@ package com.plus.plus.karma.model.github
 
 import com.plus.plus.karma.model._
 import com.plus.plus.karma.utils.json._
-
 import io.circe._
 import io.circe.generic.semiauto._
 
 import java.net.URI
+import java.time.ZonedDateTime
 
 case class GithubSearchItemLabel(id: Long,
                                  url: String,
@@ -28,19 +28,24 @@ case class GithubSearchItem(url: URI,
                             title: String,
                             state: String,
                             locked: false,
-                            body: String) {
+                            body: String,
+                            created_at: ZonedDateTime) {
   def asKarmaFeedItem: KarmaFeedItem = {
     KarmaFeedItem(
       source = KarmaFeedItemSources.Github,
       name = title,
-      description = body,
+      description = Some(body),
       link = url,
-      parentLink = repository_url
+      parentLink = repository_url,
+      created = created_at.toEpochSecond
     )
   }
 }
 
 object GithubSearchItem {
+  implicit val zonedDateTimeEncoder: Encoder[ZonedDateTime] = zonedDataTimeEncoder()
+  implicit val zonedDateTimeDecoder: Decoder[ZonedDateTime] = zonedDataTimeDecoder()
+
   implicit val codec: Codec[GithubSearchItem] = deriveCodec
 }
 
