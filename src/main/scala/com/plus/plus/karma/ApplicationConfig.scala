@@ -16,6 +16,6 @@ object ApplicationConfig {
       IO.raiseError(new Exception(failure.toString()))
     }
 
-    ConfigSource.default.at("application").load[ApplicationConfig].fold(fail, IO.pure)
+    ConfigSource.defaultApplication.at("application").load[ApplicationConfig].fold(fail, IO.pure)
   }
 }

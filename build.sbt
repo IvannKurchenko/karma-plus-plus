@@ -23,6 +23,7 @@ libraryDependencies ++= {
   val macwireVersion = "2.3.7"
   val refinedVersion = "0.9.20"
   val scalaCacheVersion = "0.28.0"
+  val catsRetryVersion = "2.1.0"
 
   Seq(
     "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -47,6 +48,9 @@ libraryDependencies ++= {
     "com.github.cb372" %% "scalacache-core" % scalaCacheVersion,
     "com.github.cb372" %% "scalacache-caffeine" % scalaCacheVersion,
     "com.github.cb372" %% "scalacache-cats-effect" % scalaCacheVersion,
+
+    "com.github.cb372" %% "cats-retry" % catsRetryVersion,
+    "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
 
     "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
 

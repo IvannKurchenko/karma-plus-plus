@@ -16,4 +16,6 @@ case class KarmaSuggest(items: List[KarmaSuggestItem])
 
 object KarmaSuggest {
   implicit val codec: Codec[KarmaSuggest] = deriveCodec
+
+  val empty: KarmaSuggest = KarmaSuggest(Nil)
 }
