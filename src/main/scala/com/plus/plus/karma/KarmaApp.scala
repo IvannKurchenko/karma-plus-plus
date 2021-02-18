@@ -39,10 +39,8 @@ object KarmaApp extends IOApp{
   private def applicationModule: ApplicationModule[IO] = {
     implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
     implicit val http4sClientDsl: Http4sClientDsl[IO] = org.http4s.client.dsl.io
-
     implicit val mode: Mode[IO] = scalacache.CatsEffect.modes.async
 
-    val module = new ApplicationModule[IO]
-    module
+    new ApplicationModule[IO]
   }
 }

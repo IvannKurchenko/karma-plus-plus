@@ -26,6 +26,8 @@ libraryDependencies ++= {
   val catsRetryVersion = "2.1.0"
 
   Seq(
+    "com.rklaehn" %% "radixtree" % "0.4.0",
+
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.slf4j" % "slf4j-api" % "1.7.30",
 

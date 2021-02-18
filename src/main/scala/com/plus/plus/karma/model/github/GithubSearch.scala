@@ -2,6 +2,7 @@ package com.plus.plus.karma.model.github
 
 import com.plus.plus.karma.model._
 import com.plus.plus.karma.utils.json._
+
 import io.circe._
 import io.circe.generic.semiauto._
 

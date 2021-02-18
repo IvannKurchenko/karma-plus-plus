@@ -1,21 +1,20 @@
 package com.plus.plus.karma.service
 
+import cats.MonadError
 import cats.effect._
 import cats.syntax.all._
-
 import com.plus.plus.karma.model.reddit._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-
 import io.circe.Decoder
 import org.http4s.headers._
 import org.http4s.circe.jsonOf
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.Method._
 import org.http4s.Uri
-
 import scalacache.Mode
 
-class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest: RestService[F]) {
+class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest: RestService[F])
+                                                                           (implicit ME: MonadError[F, Throwable]) {
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
@@ -33,12 +32,9 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest
 
   private def get[A: Decoder](url: String): F[A] = {
     for {
-      logger <- Slf4jLogger.create[F]
-      uri = Uri.unsafeFromString(url)
+      uri <- Uri.fromString(url).liftTo[F]
       request <- GET(uri, `User-Agent`(AgentProduct("karma")))
-      _ <- logger.debug(s"Start executing request to reddit by $uri")
       result <- rest.expect[A](request)(jsonOf[F, A])
-      _ <- logger.debug(s"Finished executing request to reddit by $uri")
     } yield result
   }
 }

@@ -1,7 +1,7 @@
 package com.plus.plus.karma.di
 
 import cats.effect.{Async, ContextShift, Timer}
-import com.plus.plus.karma.service.{FeedService, GithubService, RedditService}
+import com.plus.plus.karma.service.{FeedService, GithubService, RedditService, StackExchangeService}
 import com.softwaremill.macwire.wire
 import org.http4s.client.dsl.Http4sClientDsl
 import scalacache.Mode
@@ -11,4 +11,5 @@ class ServicesModule[F[_]: Mode: Http4sClientDsl: ContextShift: Timer: Async](ht
   val githubService = wire[GithubService[F]]
   val redditService = wire[RedditService[F]]
   val feedService = wire[FeedService[F]]
+  val stackExchangeService = wire[StackExchangeService[F]]
 }

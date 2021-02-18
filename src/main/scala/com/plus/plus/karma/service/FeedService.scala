@@ -11,11 +11,9 @@ import com.plus.plus.karma.model.reddit.SubredditSearch
 import scalacache.{Cache, Mode}
 import scalacache.caffeine.CaffeineCache
 
-import scala.util.Random
-import scala.concurrent.duration._
-
 class FeedService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
-                                                             redditService: RedditService[F])
+                                                             redditService: RedditService[F],
+                                                             stackExchangeService: StackExchangeService[F])
                                                             (implicit A: Applicative[F]) {
 
   implicit val languageIndexCache: Cache[GithubLanguageIndex] = CaffeineCache[GithubLanguageIndex]
@@ -38,7 +36,7 @@ class FeedService[F[_] : Mode : Sync : ContextShift : Timer](githubService: Gith
         KarmaSuggest(github ++ reddit)
       }
     } else {
-      Applicative[F].pure(KarmaSuggest.empty)
+      KarmaSuggest.empty.pure
     }
   }
 

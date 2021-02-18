@@ -17,20 +17,24 @@ import scala.concurrent.duration._
 
 class RestService[F[_]: Sync: Sleep: Timer: ContextShift](httpClient: Client[F]) {
   private val retryPolicy = RetryPolicies.
-    exponentialBackoff(5.second).
+    constantDelay(1.second).
     join(RetryPolicies.limitRetries[F](5))
 
   def expect[A](uri: String)(implicit d: EntityDecoder[F, A]): F[A] = {
     for {
       logger <- Slf4jLogger.create[F]
-      result <- httpClient.expect[A](uri)//retryingOnAllErrors[A](policy = retryPolicy, onError = logError(uri, logger))(httpClient.expect[A](uri))
+      _ <- logger.info(s"Start executing request: GET $uri")
+      result <- retryingOnAllErrors[A](policy = retryPolicy, onError = logError(uri, logger))(httpClient.expect[A](uri))
+      _ <- logger.info(s"Finished executing request: GET $uri")
     } yield result
   }
 
   def expect[A](req: Request[F])(implicit d: EntityDecoder[F, A]): F[A] = {
     for {
       logger <- Slf4jLogger.create[F]
+      _ <- logger.info(s"Start executing request: $req")
       result <- retryingOnAllErrors[A](policy = retryPolicy, onError = logError(req.toString(), logger))(httpClient.expect[A](req))
+      _ <- logger.info(s"Finished executing request: $req")
     } yield result
   }
 
