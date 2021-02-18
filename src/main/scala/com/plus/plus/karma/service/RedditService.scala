@@ -4,7 +4,6 @@ import cats.MonadError
 import cats.effect._
 import cats.syntax.all._
 import com.plus.plus.karma.model.reddit._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe.Decoder
 import org.http4s.headers._
 import org.http4s.circe.jsonOf

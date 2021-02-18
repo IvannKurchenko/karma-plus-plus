@@ -9,8 +9,6 @@ import org.http4s.circe._
 import com.plus.plus.karma.model.github._
 import com.plus.plus.karma.utils.http4s._
 
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-
 import scalacache.{Cache, Mode}
 import scalacache.caffeine.CaffeineCache
 
@@ -44,7 +42,8 @@ class GithubService[F[_]: Mode: Sync: Timer: ContextShift](rest: RestService[F])
    * - https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml
    */
   def languages: F[GithubLanguageIndex] = {
+    type Index = Map[String, GithubLanguage]
     val url = s"https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml"
-    rest.expect[GithubLanguageIndex](url)(yamlOf[F, GithubLanguageIndex])
+    rest.expect[Index](url)(yamlOf[F, Index]).map(GithubLanguageIndex.apply)
   }
 }

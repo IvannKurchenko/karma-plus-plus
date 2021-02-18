@@ -15,22 +15,29 @@ import scala.concurrent.ExecutionContext
 
 object KarmaApp extends IOApp{
   override def run(args: List[String]): IO[ExitCode] = {
-    ApplicationConfig.load >>= startServer
+    val module = applicationModule
+    for {
+      config <- ApplicationConfig.load
+      _ <- prefetchData(module)
+      exitCode <- startServer(config, module)
+    } yield exitCode
   }
 
-  private val startServer: ApplicationConfig => IO[ExitCode] = { applicationConfig =>
+  private def prefetchData(module: ApplicationModule[IO]) = {
+    module.servicesModule.feedService.prefetchSuggestionData
+  }
+
+  private def startServer(applicationConfig: ApplicationConfig, module: ApplicationModule[IO]): IO[ExitCode] = {
     BlazeServerBuilder[IO](ExecutionContext.global)
       .bindHttp(applicationConfig.port, applicationConfig.host)
-      .withHttpApp(httpApp)
+      .withHttpApp(httpApp(module))
       .serve
       .compile
       .drain
       .as(ExitCode.Success)
   }
 
-  private def httpApp = {
-    val module = applicationModule
-
+  private def httpApp(module: ApplicationModule[IO]) = {
     val ui = module.routes.uiRoutes.routes
     val api = module.routes.feedRoutes.routes
     Router("/" -> ui, "/api" -> api).orNotFound

@@ -12,6 +12,7 @@ object KarmaFeedItemSources extends Enumeration {
   type KarmaFeedItemSource = Value
   val Github = Value("Github")
   val Reddit = Value("Reddit")
+  val StackExchange = Value("StackExchange")
 
   implicit val decoder: Decoder[KarmaFeedItemSource] = Decoder.decodeEnumeration(this)
   implicit val encoder: Encoder[KarmaFeedItemSource] = Encoder.encodeEnumeration(this)

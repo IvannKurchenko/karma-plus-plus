@@ -1,19 +1,33 @@
 package com.plus.plus.karma.service
 
+import cats.MonadError
 import cats.effect._
-import com.plus.plus.karma.model.stackexchange.{StackExchangeQuestions, StackExchangeSites, StackExchangeTags}
+import cats.syntax.all._
+import com.plus.plus.karma.model.stackexchange._
+import io.circe.Decoder
+import org.http4s.headers._
 import org.http4s.circe.jsonOf
+import org.http4s.client.dsl.Http4sClientDsl
+import org.http4s.Method._
+import org.http4s.Uri
+import org.http4s.client.Client
+import org.http4s.client.middleware.GZip
 import scalacache.Mode
 
-class StackExchangeService[F[_]: Mode: Sync: Timer: ContextShift](rest: RestService[F]) {
+import java.net.InetAddress
+
+class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](httpClient: Client[F])
+                                                                                  (implicit ME: MonadError[F, Throwable]) {
+  private val dsl = implicitly[Http4sClientDsl[F]]
+  import dsl._
 
   /**
    * Fetch StackExchange tags sorted by popular first.
    * API documentation: https://api.stackexchange.com/docs/tags
    */
   def tags(page: Int, pageSize: Int, site: String): F[StackExchangeTags] = {
-    val uri = s"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=$site&page=$page"
-    rest.expect[StackExchangeTags](uri)(jsonOf[F, StackExchangeTags])
+    val uri = s"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=$site&page=$page&pagesize=$pageSize"
+    get[StackExchangeTags](uri)
   }
 
   /**
@@ -22,7 +36,7 @@ class StackExchangeService[F[_]: Mode: Sync: Timer: ContextShift](rest: RestServ
    */
   def sites(page: Int, pageSize: Int): F[StackExchangeSites] = {
     val uri = s"https://api.stackexchange.com/2.2/sites?page=$page&pagesize=$pageSize"
-    rest.expect[StackExchangeSites](uri)(jsonOf[F, StackExchangeSites])
+    get[StackExchangeSites](uri)
   }
 
   /**
@@ -31,6 +45,15 @@ class StackExchangeService[F[_]: Mode: Sync: Timer: ContextShift](rest: RestServ
    */
   def questions(page: Int, pageSize: Int, site: String, tag: String): F[StackExchangeQuestions] = {
     val uri = s"https://api.stackexchange.com/2.2/questions?page=$page&pagesize=$pageSize&order=desc&sort=creation&site=$site&tagged=$tag"
-    rest.expect[StackExchangeQuestions](uri)(jsonOf[F, StackExchangeQuestions])
+    get[StackExchangeQuestions](uri)
+  }
+
+  private def get[A: Decoder](url: String): F[A] = {
+    for {
+      uri <- Uri.fromString(url).liftTo[F]
+      localhost <- implicitly[Sync[F]].delay(InetAddress.getLocalHost.getHostName)
+      request <- GET(uri, Host(localhost))
+      result <- GZip()(httpClient).expect[A](request)(jsonOf[F, A])
+    } yield result
   }
 }

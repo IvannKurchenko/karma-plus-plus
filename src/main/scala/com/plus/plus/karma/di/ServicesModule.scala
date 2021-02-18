@@ -10,6 +10,6 @@ class ServicesModule[F[_]: Mode: Http4sClientDsl: ContextShift: Timer: Async](ht
   import httpClientModule._
   val githubService = wire[GithubService[F]]
   val redditService = wire[RedditService[F]]
-  val feedService = wire[FeedService[F]]
   val stackExchangeService = wire[StackExchangeService[F]]
+  val feedService = wire[FeedService[F]]
 }
