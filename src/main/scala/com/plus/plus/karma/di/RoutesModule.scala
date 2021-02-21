@@ -10,4 +10,5 @@ class RoutesModule[F[_]: ContextShift: Timer: Async: Http4sDsl](servicesModule: 
 
   val uiRoutes = wire[UiRoutes[F]]
   val feedRoutes = wire[FeedApiRoutes[F]]
+  val buildRoutes = wire[BuildRoutes[F]]
 }

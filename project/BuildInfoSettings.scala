@@ -11,7 +11,9 @@ object BuildInfoSettings {
     buildInfoPackage := "com.plus.plus.karma.build",
     buildInfoOptions += BuildInfoOption.ToJson,
     buildInfoKeys := Seq[BuildInfoKey](
-      name, version, scalaVersion,
+      name,
+      version,
+      scalaVersion,
       BuildInfoKey.action("buildTime") {
         LocalDateTime.now().toString
       },

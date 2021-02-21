@@ -40,7 +40,8 @@ object KarmaApp extends IOApp{
   private def httpApp(module: ApplicationModule[IO]) = {
     val ui = module.routes.uiRoutes.routes
     val api = module.routes.feedRoutes.routes
-    Router("/" -> ui, "/api" -> api).orNotFound
+    val build = module.routes.buildRoutes.routes
+    Router("/" -> ui, "/api" -> api, "/build" -> build).orNotFound
   }
 
   private def applicationModule: ApplicationModule[IO] = {

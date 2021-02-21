@@ -11,16 +11,16 @@ import org.http4s.dsl.Http4sDsl
 import io.circe._
 import io.circe.syntax._
 
-class FeedApiRoutes[F[_]: ContextShift: Timer: Async](feedService: FeedService[F],
-                                                      feedSuggestionsService: FeedSuggestionsService[F])
-                                                     (implicit dsl: Http4sDsl[F]) {
+class FeedApiRoutes[F[_] : Async](feedService: FeedService[F], feedSuggestionsService: FeedSuggestionsService[F])
+                                 (implicit dsl: Http4sDsl[F]) {
+
   import dsl._
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / "suggest" / term =>
       feedSuggestionsService.suggestions(term).flatMap(suggestion => Ok(suggestion.asJson))
 
-    case request @ POST -> Root / "feed" => {
+    case request@POST -> Root / "feed" => {
       implicit val decoder = jsonOf[F, KarmaFeedRequest]
       for {
         feedRequest <- request.as[KarmaFeedRequest]
