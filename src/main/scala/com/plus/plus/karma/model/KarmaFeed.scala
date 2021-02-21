@@ -1,39 +1,28 @@
 package com.plus.plus.karma.model
 
-import io.circe.{Decoder, _}
+import io.circe._
 import io.circe.generic.semiauto._
 
 import com.plus.plus.karma.utils.json._
-import com.plus.plus.karma.model.KarmaFeedItemSources.KarmaFeedItemSource
 
 import java.net.URI
 
-object KarmaFeedItemSources extends Enumeration {
-  type KarmaFeedItemSource = Value
-  val Github = Value("Github")
-  val Reddit = Value("Reddit")
-  val StackExchange = Value("StackExchange")
-
-  implicit val decoder: Decoder[KarmaFeedItemSource] = Decoder.decodeEnumeration(this)
-  implicit val encoder: Encoder[KarmaFeedItemSource] = Encoder.encodeEnumeration(this)
-}
-
-case class KarmaFeedItemRequest(source: KarmaFeedItemSource, subSource: Option[String], name: String)
+case class KarmaFeedItemRequest(subSource: Option[String], name: String)
 
 object KarmaFeedItemRequest {
   implicit val codec: Codec[KarmaFeedItemRequest] = deriveCodec
 }
 
-case class KarmaFeedRequest(items: List[KarmaFeedItemRequest], page: Int) {
-  def source(source: KarmaFeedItemSource): List[String] = items.filter(_.source == source).map(_.name)
-}
+case class KarmaFeedRequest(github: List[KarmaFeedItemRequest],
+                            reddit: List[KarmaFeedItemRequest],
+                            stackExchange: List[KarmaFeedItemRequest],
+                            page: Int)
 
 object KarmaFeedRequest {
   implicit val codec: Codec[KarmaFeedRequest] = deriveCodec
 }
 
-case class KarmaFeedItem(source: KarmaFeedItemSource,
-                         name: String,
+case class KarmaFeedItem(name: String,
                          description: Option[String],
                          link: URI,
                          parentLink: URI,

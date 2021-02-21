@@ -33,7 +33,6 @@ case class GithubSearchItem(url: URI,
                             created_at: ZonedDateTime) {
   def asKarmaFeedItem: KarmaFeedItem = {
     KarmaFeedItem(
-      source = KarmaFeedItemSources.Github,
       name = title,
       description = Some(body),
       link = url,

@@ -1,6 +1,6 @@
 package com.plus.plus.karma.model.reddit
 
-import com.plus.plus.karma.model.{KarmaFeedItem, KarmaFeedItemSources}
+import com.plus.plus.karma.model.KarmaFeedItem
 
 import io.circe._
 import io.circe.generic.semiauto._
@@ -17,7 +17,6 @@ case class SubredditFeed(subreddit: String,
 
   def asKarmaFeedItem: KarmaFeedItem = {
     KarmaFeedItem(
-      source = KarmaFeedItemSources.Reddit,
       name = title,
       description = selftext,
       link = URI.create(s"https://www.reddit.com$permalink"),

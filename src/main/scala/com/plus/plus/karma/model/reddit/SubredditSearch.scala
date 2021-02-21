@@ -1,6 +1,6 @@
 package com.plus.plus.karma.model.reddit
 
-import com.plus.plus.karma.model.{KarmaFeedItemSources, KarmaSuggestItem}
+import com.plus.plus.karma.model.KarmaSuggestItem
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -11,7 +11,7 @@ case class SubredditSearch(display_name: String,
                            description: Option[String],
                            url: String) {
   def asKarmaSuggestItem: KarmaSuggestItem = {
-    KarmaSuggestItem(display_name_prefixed, KarmaFeedItemSources.Reddit, description.getOrElse(""), "")
+    KarmaSuggestItem(display_name_prefixed, description.getOrElse(""), "")
   }
 }
 

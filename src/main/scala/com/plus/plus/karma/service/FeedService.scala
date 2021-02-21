@@ -4,16 +4,10 @@ import cats.Applicative
 import cats.syntax.all._
 import cats.effect._
 import com.plus.plus.karma.model._
-import com.plus.plus.karma.model.KarmaFeedItemSources.{KarmaFeedItemSource, _}
-import com.plus.plus.karma.model.stackexchange.{SiteStackExchangeTag, StackExchangeSite}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import scalacache.{Cache, Mode}
-import scalacache.caffeine.CaffeineCache
 
-import scala.concurrent.duration._
-
-class FeedService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
+class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubService[F],
                                                              redditService: RedditService[F],
                                                              stackExchangeService: StackExchangeService[F])
                                                             (implicit A: Applicative[F]) {
@@ -22,29 +16,31 @@ class FeedService[F[_] : Mode : Sync : ContextShift : Timer](githubService: Gith
 
   def feed(request: KarmaFeedRequest): F[List[KarmaFeedItem]] = {
     for {
-      github <- sourceFeed(request, KarmaFeedItemSources.Github)(githubFeed)
-      reddit <- sourceFeed(request, KarmaFeedItemSources.Reddit)(redditFeed)
-      stackExchange <- sourceFeed(request, KarmaFeedItemSources.StackExchange)(stackExchangeFeed)
+      _ <- Logger[F].info(s"Start searching feed for request: $request")
+      github <- sourceFeed(request.github, request.page)(githubFeed)
+      reddit <- sourceFeed(request.reddit, request.page)(redditFeed)
+      stackExchange <- sourceFeed(request.stackExchange, request.page)(stackExchangeFeed)
+      _ <- Logger[F].info(s"Finished searching feed for request: $request")
     } yield (github ++ reddit).sortBy(_.created).reverse
   }
 
-  private def sourceFeed(request: KarmaFeedRequest, source: KarmaFeedItemSource)
-                        (f: (List[String], Int) => F[List[KarmaFeedItem]]): F[List[KarmaFeedItem]] = {
-    val items = request.source(source)
-    if (items.nonEmpty) f(items, request.page) else List.empty[KarmaFeedItem].pure
+  private def sourceFeed(items: List[KarmaFeedItemRequest], page: Int)
+                        (f: (List[KarmaFeedItemRequest], Int) => F[List[KarmaFeedItem]]): F[List[KarmaFeedItem]] = {
+    if (items.nonEmpty) f(items, page) else List.empty[KarmaFeedItem].pure
   }
 
-  private def githubFeed(items: List[String], page: Int): F[List[KarmaFeedItem]] = {
-    githubService.searchIssues(items, page, 10).map(_.items.map(_.asKarmaFeedItem))
+  private def githubFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
+    githubService.searchIssues(items.map(_.name), page, 10).map(_.items.map(_.asKarmaFeedItem))
   }
 
-  private def redditFeed(items: List[String], page: Int): F[List[KarmaFeedItem]] = {
+  private def redditFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
     val limit = 10
     val count = limit * page
-    items.traverse(redditService.subredditsPosts(_, limit, count)).map(_.flatMap(_.data.children.map(_.data.asKarmaFeedItem)))
+    items.map(_.name).traverse(redditService.subredditsPosts(_, limit, count)).
+      map(_.flatMap(_.data.children.map(_.data.asKarmaFeedItem)))
   }
 
-  private def stackExchangeFeed(items: List[String], page: Int): F[List[KarmaFeedItem]] = {
+  private def stackExchangeFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
     val pageSize = 10
     ???///items.traverse(stackExchangeService.questions(_, pageSize, )).
   }

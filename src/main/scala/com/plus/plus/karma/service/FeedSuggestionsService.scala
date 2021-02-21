@@ -31,9 +31,7 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
         reddit <- redditSuggestions(normalized)
         github <- githubSuggestions(normalized)
         stackExchange <- stackExchangeSuggestions(normalized)
-      } yield {
-        KarmaSuggest(github ++ reddit ++ stackExchange)
-      }
+      } yield KarmaSuggest(github, reddit, stackExchange)
     } else {
       KarmaSuggest.empty.pure
     }
