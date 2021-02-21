@@ -8,7 +8,7 @@ case class RedditAutocompleteItem(numSubscribers: Int,
                                   name: String,
                                   id: String) {
   def toKarmaSuggest: KarmaSuggestItem = {
-    KarmaSuggestItem(name, KarmaFeedItemSources.Reddit, s"subreddit with $numSubscribers subscribers")
+    KarmaSuggestItem(name, KarmaFeedItemSources.Reddit, s"subreddit with $numSubscribers subscribers", "")
   }
 }
 

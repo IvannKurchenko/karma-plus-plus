@@ -11,7 +11,7 @@ case class SubredditSearch(display_name: String,
                            description: Option[String],
                            url: String) {
   def asKarmaSuggestItem: KarmaSuggestItem = {
-    KarmaSuggestItem(display_name_prefixed, KarmaFeedItemSources.Reddit, description.getOrElse(""))
+    KarmaSuggestItem(display_name_prefixed, KarmaFeedItemSources.Reddit, description.getOrElse(""), "")
   }
 }
 

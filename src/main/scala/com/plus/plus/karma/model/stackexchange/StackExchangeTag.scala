@@ -4,15 +4,17 @@ import com.plus.plus.karma.model.{KarmaFeedItemSources, KarmaSuggestItem}
 import io.circe._
 import io.circe.generic.semiauto._
 
+case class SiteStackExchangeTag(site: StackExchangeSite, tag: StackExchangeTag) {
+  def asKarmaItem: KarmaSuggestItem = {
+    KarmaSuggestItem(tag.name, KarmaFeedItemSources.StackExchange, s"Tag from ${site.name} with ${tag.count} posts", site.api_site_parameter)
+  }
+}
+
 case class StackExchangeTag(has_synonyms: Boolean,
                             is_moderator_only: Boolean,
                             is_required: Boolean,
                             count: Int,
-                            name: String) {
-  def asKarmaItem: KarmaSuggestItem = {
-    KarmaSuggestItem(name, KarmaFeedItemSources.StackExchange, s"Tag from $count posts")
-  }
-}
+                            name: String)
 
 object StackExchangeTag {
   implicit val codec: Codec[StackExchangeTag] = deriveCodec

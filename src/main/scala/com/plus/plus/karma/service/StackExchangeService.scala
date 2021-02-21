@@ -21,11 +21,13 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
+  private val defaultPageSize = 100
+
   /**
    * Fetch StackExchange tags sorted by popular first.
    * API documentation: https://api.stackexchange.com/docs/tags
    */
-  def tags(page: Int, pageSize: Int, site: String): F[StackExchangeTags] = {
+  def tags(page: Int, pageSize: Int = defaultPageSize, site: String): F[StackExchangeTags] = {
     val uri = s"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=$site&page=$page&pagesize=$pageSize"
     get[StackExchangeTags](uri)
   }
@@ -34,7 +36,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
    * Fetch all sites hosted by StackExchange
    * API documentation: https://api.stackexchange.com/docs/sites
    */
-  def sites(page: Int, pageSize: Int): F[StackExchangeSites] = {
+  def sites(page: Int, pageSize: Int = defaultPageSize): F[StackExchangeSites] = {
     val uri = s"https://api.stackexchange.com/2.2/sites?page=$page&pagesize=$pageSize"
     get[StackExchangeSites](uri)
   }
@@ -43,7 +45,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
    * Fetch questions
    * API documentation: https://api.stackexchange.com/docs/questions
    */
-  def questions(page: Int, pageSize: Int, site: String, tag: String): F[StackExchangeQuestions] = {
+  def questions(page: Int, pageSize: Int = defaultPageSize, site: String, tag: String): F[StackExchangeQuestions] = {
     val uri = s"https://api.stackexchange.com/2.2/questions?page=$page&pagesize=$pageSize&order=desc&sort=creation&site=$site&tagged=$tag"
     get[StackExchangeQuestions](uri)
   }

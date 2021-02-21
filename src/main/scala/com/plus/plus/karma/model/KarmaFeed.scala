@@ -18,13 +18,13 @@ object KarmaFeedItemSources extends Enumeration {
   implicit val encoder: Encoder[KarmaFeedItemSource] = Encoder.encodeEnumeration(this)
 }
 
-case class KarmaFeedItemRequest(source: KarmaFeedItemSource, name: String)
+case class KarmaFeedItemRequest(source: KarmaFeedItemSource, subSource: Option[String], name: String)
 
 object KarmaFeedItemRequest {
   implicit val codec: Codec[KarmaFeedItemRequest] = deriveCodec
 }
 
-case class KarmaFeedRequest(items: List[KarmaFeedItemRequest]) {
+case class KarmaFeedRequest(items: List[KarmaFeedItemRequest], page: Int) {
   def source(source: KarmaFeedItemSource): List[String] = items.filter(_.source == source).map(_.name)
 }
 

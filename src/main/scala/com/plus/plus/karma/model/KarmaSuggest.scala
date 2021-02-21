@@ -6,7 +6,8 @@ import com.plus.plus.karma.model.KarmaFeedItemSources.KarmaFeedItemSource
 
 case class KarmaSuggestItem(name: String,
                             source: KarmaFeedItemSource,
-                            description: String)
+                            description: String,
+                            subSource: String)//TODO FIX - should be made for specific SE case only
 
 object KarmaSuggestItem {
   implicit val codec: Codec[KarmaSuggestItem] = deriveCodec

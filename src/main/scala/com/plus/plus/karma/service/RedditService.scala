@@ -21,8 +21,8 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest
     get(s"https://www.reddit.com/subreddits/search.json?q=$query&limit=$limit&count=$count")
   }
 
-  def subredditsPosts(name: String): F[RedditListing[SubredditFeed]] = {
-    get(s"https://www.reddit.com/r/$name/new.json")
+  def subredditsPosts(name: String, limit: Int, count: Int): F[RedditListing[SubredditFeed]] = {
+    get(s"https://www.reddit.com/r/$name/new.json?limit=$limit&count=$count")
   }
 
   def autocomplete(query: String): F[RedditAutocomplete] = {
