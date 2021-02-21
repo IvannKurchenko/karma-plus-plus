@@ -1,0 +1,19 @@
+<div>
+  <mat-form-field class="suggest-form">
+    <mat-label>Start typing karma topic to search (e.g.: java, aws, algorithms)</mat-label>
+    <input class="suggest-input" matInput type="text" [(ngModel)]="value" (keyup)="onSuggestInputChange()">
+  </mat-form-field>
+
+  <div [hidden]="!inProgress">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <mat-list>
+    <mat-list-item *ngFor="let suggestion of suggestions">
+      <div class="suggest-item-box">
+        <span>{{suggestion.name}}</span>
+        <span>{{suggestion.description}}</span>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</div>

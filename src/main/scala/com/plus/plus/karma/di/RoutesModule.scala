@@ -8,7 +8,6 @@ import org.http4s.dsl.Http4sDsl
 class RoutesModule[F[_]: ContextShift: Timer: Async: Http4sDsl](servicesModule: ServicesModule[F]) {
   import servicesModule._
 
-  val uiRoutes = wire[UiRoutes[F]]
   val feedRoutes = wire[FeedApiRoutes[F]]
   val buildRoutes = wire[BuildRoutes[F]]
 }
