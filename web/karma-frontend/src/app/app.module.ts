@@ -19,6 +19,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatListModule} from '@angular/material/list';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import {MatListModule} from '@angular/material/list';
     MatTooltipModule,
     MatIconModule,
     MatProgressBarModule,
-    MatListModule
+    MatListModule,
+    MatChipsModule,
+    MatCardModule
   ],
   providers: [
     SuggestApiService

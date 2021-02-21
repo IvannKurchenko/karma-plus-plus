@@ -10,7 +10,8 @@ case class SiteStackExchangeTag(site: StackExchangeSite, tag: StackExchangeTag) 
       name = tag.name,
       description = s"Tag from ${site.name} with ${tag.count} posts",
       source = KarmaFeedItemSources.StackExchange,
-      subSource = site.api_site_parameter
+      site = site.site_url,
+      subSource = site.api_site_parameter,
     )
   }
 }
