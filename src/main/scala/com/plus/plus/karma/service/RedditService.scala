@@ -17,14 +17,16 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
-  def subredditsSearch(query: String, limit: Int, count: Int): F[RedditListing[SubredditSearch]] = {
-    get(s"https://www.reddit.com/subreddits/search.json?q=$query&limit=$limit&count=$count")
-  }
-
+  /**
+   * List newest reddit posts. API documentation: https://www.reddit.com/dev/api/#GET_new
+   */
   def subredditsPosts(name: String, limit: Int, count: Int): F[RedditListing[SubredditFeed]] = {
     get(s"https://www.reddit.com/r/$name/new.json?limit=$limit&count=$count")
   }
 
+  /**
+   * Reddit autocomplete. API documentation: https://www.reddit.com/dev/api/#GET_api_subreddit_autocomplete
+   */
   def autocomplete(query: String): F[RedditAutocomplete] = {
     get(s"https://www.reddit.com/api/subreddit_autocomplete.json?query=$query&&include_profiles=false")
   }

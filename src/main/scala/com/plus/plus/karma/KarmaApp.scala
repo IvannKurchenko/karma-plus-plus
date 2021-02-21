@@ -24,7 +24,7 @@ object KarmaApp extends IOApp{
   }
 
   private def prefetchData(module: ApplicationModule[IO]) = {
-    module.servicesModule.feedService.prefetchSuggestionData
+    module.servicesModule.feedSuggestionsService.prefetchSuggestionData
   }
 
   private def startServer(applicationConfig: ApplicationConfig, module: ApplicationModule[IO]): IO[ExitCode] = {
