@@ -5,7 +5,7 @@ Aggregator of Github `help-wanted` issues, stack exchange questions, reddit post
 Create feed via suggestions
 
 ## Stack
-- Scala and cats-effect;
+- Scala  and cats-effect;
 - Angular
 
 # Prerequisites

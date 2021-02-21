@@ -1,5 +1,7 @@
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin)
   .settings(BuildInfoSettings.settings)
   .settings(DependencySettings.settings)
   .settings(DynverSettings.settings)
@@ -8,6 +10,8 @@ lazy val root = (project in file("."))
     scalacOptions := Seq("-Xlint", "-Ymacro-annotations"),
     scalaVersion := "2.13.4",
     dynverSeparator in ThisBuild := "-",
+    mainClass := Some("com.plus.plus.karma.KarmaApp"),
+    dockerUpdateLatest := true
 
     /*
     FIXME: error: not found: value versionReconciliation

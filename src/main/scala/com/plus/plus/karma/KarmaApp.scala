@@ -13,7 +13,7 @@ import scalacache.Mode
 
 import scala.concurrent.ExecutionContext
 
-object KarmaApp extends IOApp{
+object KarmaApp extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     val module = applicationModule
     for {
@@ -24,7 +24,7 @@ object KarmaApp extends IOApp{
   }
 
   private def prefetchData(module: ApplicationModule[IO]) = {
-    IO.unit//module.servicesModule.feedSuggestionsService.prefetchSuggestionData
+    IO.unit //module.servicesModule.feedSuggestionsService.prefetchSuggestionData
   }
 
   private def startServer(applicationConfig: ApplicationConfig, module: ApplicationModule[IO]): IO[ExitCode] = {
