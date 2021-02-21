@@ -10,9 +10,10 @@ import {COMMA, ENTER} from "@angular/cdk/keycodes";
   styleUrls: ['./suggest.component.less']
 })
 export class SuggestComponent {
-  value: String = '';
+  suggestion: String = '';
   inProgress: Boolean = false;
-  suggestions: SuggestItemApiModel[] = [];
+
+  allSuggestions: SuggestItemApiModel[] = [];
   selectedSuggestions: SuggestItemApiModel[] = [];
 
   selectable: BooleanInput = true;
@@ -24,17 +25,24 @@ export class SuggestComponent {
   }
 
   onSuggestInputChange(): void {
-    if (this.value != '') {
+    if (this.suggestion != '') {
       this.inProgress = true;
-      this.suggestApiService.getSuggestions(this.value).subscribe(
+      this.suggestApiService.getSuggestions(this.suggestion).subscribe(
         suggestions => this.onSuggestionsRetrieved(suggestions)
       );
+    } else {
+      this.allSuggestions = [];
     }
   }
 
   private onSuggestionsRetrieved(suggestions: SuggestionsApiModel): void {
     this.inProgress = false;
-    this.suggestions = suggestions.items;
+    this.allSuggestions = suggestions.items;
+  }
+
+  clear(): void {
+    this.suggestion = '';
+    this.allSuggestions = [];
   }
 
   add(suggestion: SuggestItemApiModel): void {

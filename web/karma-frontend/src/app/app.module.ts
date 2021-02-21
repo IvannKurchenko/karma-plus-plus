@@ -21,6 +21,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {MatCardModule} from '@angular/material/card';
     MatProgressBarModule,
     MatListModule,
     MatChipsModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [
     SuggestApiService

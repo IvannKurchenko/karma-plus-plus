@@ -2,7 +2,7 @@
   <mat-form-field class="suggest-form">
     <mat-label>Start typing karma topic to search (e.g.: java, aws, algorithms)</mat-label>
 
-    <mat-chip-list #chipList aria-label="Fruit selection">
+    <mat-chip-list #chipList>
       <mat-chip
         *ngFor="let suggestion of selectedSuggestions"
         [selectable]="selectable"
@@ -15,14 +15,17 @@
       </mat-chip>
 
       <input
-        placeholder="New fruit..."
         class="suggest-input"
         matInput
         type="text"
         (keyup)="onSuggestInputChange()"
-        [(ngModel)]="value"
+        [(ngModel)]="suggestion"
         [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+
+      <button mat-button *ngIf="suggestion" matSuffix mat-icon-button aria-label="Clear" (click)="clear()">
+        <mat-icon>close</mat-icon>
+      </button>
     </mat-chip-list>
 
   </mat-form-field>
@@ -31,8 +34,12 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
 
+  <div class="full-width flex-column">
+    <button mat-raised-button>Create feed</button>
+  </div>
+
   <div>
-    <mat-card *ngFor="let suggestion of suggestions" class="suggest-item-box">
+    <mat-card *ngFor="let suggestion of allSuggestions" class="suggest-item-box">
       <div class="flex-row" (click)="add(suggestion)">
         <img class="suggest-site-logo" src="{{suggestion.site}}/favicon.ico">
         <mat-card-header>
