@@ -1,6 +1,6 @@
 package com.plus.plus.karma.model.reddit
 
-import com.plus.plus.karma.model.KarmaSuggestItem
+import com.plus.plus.karma.model.{KarmaFeedItemSources, KarmaSuggestItem}
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -8,7 +8,7 @@ case class RedditAutocompleteItem(numSubscribers: Int,
                                   name: String,
                                   id: String) {
   def toKarmaSuggest: KarmaSuggestItem = {
-    KarmaSuggestItem(name, s"subreddit with $numSubscribers subscribers", "")
+    KarmaSuggestItem(name, s"subreddit with $numSubscribers subscribers", KarmaFeedItemSources.Reddit, "")
   }
 }
 

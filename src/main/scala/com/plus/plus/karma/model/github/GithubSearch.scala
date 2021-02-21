@@ -36,8 +36,9 @@ case class GithubSearchItem(url: URI,
       name = title,
       description = Some(body),
       link = url,
-      parentLink = repository_url,
-      created = created_at.toEpochSecond
+      parentLink = Some(repository_url),
+      created = created_at.toEpochSecond,
+      source = KarmaFeedItemSources.Github,
     )
   }
 }

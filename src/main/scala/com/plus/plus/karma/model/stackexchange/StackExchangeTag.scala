@@ -1,12 +1,17 @@
 package com.plus.plus.karma.model.stackexchange
 
-import com.plus.plus.karma.model.KarmaSuggestItem
+import com.plus.plus.karma.model.{KarmaFeedItemSources, KarmaSuggestItem}
 import io.circe._
 import io.circe.generic.semiauto._
 
 case class SiteStackExchangeTag(site: StackExchangeSite, tag: StackExchangeTag) {
   def asKarmaItem: KarmaSuggestItem = {
-    KarmaSuggestItem(tag.name, s"Tag from ${site.name} with ${tag.count} posts", site.api_site_parameter)
+    KarmaSuggestItem(
+      name = tag.name,
+      description = s"Tag from ${site.name} with ${tag.count} posts",
+      source = KarmaFeedItemSources.StackExchange,
+      subSource = site.api_site_parameter
+    )
   }
 }
 

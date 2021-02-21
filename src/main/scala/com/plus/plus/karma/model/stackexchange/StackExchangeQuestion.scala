@@ -1,10 +1,10 @@
 package com.plus.plus.karma.model.stackexchange
 
-import java.net.URI
+import com.plus.plus.karma.model.{KarmaFeedItem, KarmaFeedItemSources}
 
+import java.net.URI
 import io.circe._
 import io.circe.generic.semiauto._
-
 import com.plus.plus.karma.utils.json._
 
 case class StackExchangeQuestion(tags: List[String],
@@ -13,7 +13,18 @@ case class StackExchangeQuestion(tags: List[String],
                                  score: Int,
                                  creation_date: Long,
                                  link: URI,
-                                 title: String)
+                                 title: String) {
+  def asKarmaFeedItem: KarmaFeedItem = {
+    KarmaFeedItem(
+      name = title,
+      description = None,
+      link = link,
+      parentLink = None,
+      created = creation_date,
+      source = KarmaFeedItemSources.Reddit
+    )
+  }
+}
 
 object StackExchangeQuestion {
   implicit val codec: Codec[StackExchangeQuestion] = deriveCodec

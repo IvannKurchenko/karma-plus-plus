@@ -1,7 +1,6 @@
 package com.plus.plus.karma.model.reddit
 
-import com.plus.plus.karma.model.KarmaFeedItem
-
+import com.plus.plus.karma.model.{KarmaFeedItem, KarmaFeedItemSources}
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -20,8 +19,9 @@ case class SubredditFeed(subreddit: String,
       name = title,
       description = selftext,
       link = URI.create(s"https://www.reddit.com$permalink"),
-      parentLink = URI.create(s"https://www.reddit.com/$subreddit_name_prefixed"),
-      created = created_utc
+      parentLink = Some(URI.create(s"https://www.reddit.com/$subreddit_name_prefixed")),
+      created = created_utc,
+      source = KarmaFeedItemSources.Reddit
     )
   }
 }
