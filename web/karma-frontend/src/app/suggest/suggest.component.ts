@@ -1,8 +1,10 @@
 import {Component} from '@angular/core';
+import {FeedRequestQueryParameters} from "../common/items-query-parameters";
 import {SuggestApiService} from "./suggest-api.service";
 import {SuggestionsApiModel, SuggestItemApiModel} from "./suggest-api.model";
 import {BooleanInput} from "@angular/cdk/coercion";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'suggest',
@@ -21,7 +23,15 @@ export class SuggestComponent {
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor(private suggestApiService: SuggestApiService) {
+  constructor(private suggestApiService: SuggestApiService,
+              private route: ActivatedRoute,
+              private router: Router) {
+  }
+
+  ngOnInit() {
+    /*this.route.queryParams.subscribe(params => {
+      this.selectedSuggestions = params['name'];
+    });*/
   }
 
   onSuggestInputChange(): void {
@@ -55,5 +65,10 @@ export class SuggestComponent {
     if (index >= 0) {
       this.selectedSuggestions.splice(index, 1);
     }
+  }
+
+  navigateToFeed(): void {
+    let params = FeedRequestQueryParameters.format(this.selectedSuggestions);
+    this.router.navigate(['/feed'], {queryParams: params});
   }
 }

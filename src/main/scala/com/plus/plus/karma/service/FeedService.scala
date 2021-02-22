@@ -15,14 +15,17 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
 
   private implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
-  def feed(request: KarmaFeedRequest): F[List[KarmaFeedItem]] = {
+  def feed(request: KarmaFeedRequest): F[KarmaFeed] = {
     for {
       _ <- Logger[F].info(s"Start searching feed for request: $request")
       github <- sourceFeed(request, KarmaFeedItemSources.Github)(githubFeed)
       reddit <- sourceFeed(request, KarmaFeedItemSources.Reddit)(redditFeed)
-      stackExchange <- sourceFeed(request, KarmaFeedItemSources.StackExchange)(stackExchangeFeed)
+      //stackExchange <- sourceFeed(request, KarmaFeedItemSources.StackExchange)(stackExchangeFeed)
       _ <- Logger[F].info(s"Finished searching feed for request: $request")
-    } yield (github ++ reddit ++ stackExchange).sortBy(_.created).reverse
+    } yield {
+      val items = (github ++ reddit).sortBy(_.created).reverse
+      KarmaFeed(items)
+    }
   }
 
   private def sourceFeed(request: KarmaFeedRequest, source: KarmaFeedItemSource)

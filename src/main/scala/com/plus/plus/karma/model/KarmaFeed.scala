@@ -18,7 +18,7 @@ object KarmaFeedItemSources extends Enumeration {
   implicit val encoder: Encoder[KarmaFeedItemSource] = Encoder.encodeEnumeration(this)
 }
 
-case class KarmaFeedItemRequest(source: KarmaFeedItemSource, subSource: Option[String] = None, name: String)
+case class KarmaFeedItemRequest(source: KarmaFeedItemSource, subSource: String, name: String)
 
 object KarmaFeedItemRequest {
   implicit val codec: Codec[KarmaFeedItemRequest] = deriveCodec

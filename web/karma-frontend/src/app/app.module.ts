@@ -22,12 +22,14 @@ import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
+import {FeedApiService} from "./feed/feed-api.service";
+import {FeedComponent} from "./feed/feed.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-
-    SuggestComponent
+    SuggestComponent,
+    FeedComponent
   ],
   imports: [
     BrowserModule,
@@ -48,8 +50,10 @@ import {MatButtonModule} from '@angular/material/button';
     MatCardModule,
     MatButtonModule
   ],
+
   providers: [
-    SuggestApiService
+    SuggestApiService,
+    FeedApiService
   ],
   bootstrap: [AppComponent]
 })

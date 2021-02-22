@@ -1,0 +1,25 @@
+<div>
+
+  <div [hidden]="!inProgress">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <div>
+    <mat-card *ngFor="let item of feed" class="feed-item-box" (click)="openItem(item)">
+      <div class="flex-row">
+        <!--<img class="suggest-site-logo" src="{{suggestion.site}}/favicon.ico">-->
+        <mat-card-header>
+          <mat-card-title>{{item.name}}</mat-card-title>
+          <mat-card-subtitle>
+            {{item.description}}
+          </mat-card-subtitle>
+        </mat-card-header>
+      </div>
+    </mat-card>
+
+    <div [hidden]="inProgress">
+      <mat-paginator ></mat-paginator>
+    </div>
+  </div>
+
+</div>

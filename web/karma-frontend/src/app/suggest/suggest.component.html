@@ -1,4 +1,4 @@
-<div>
+<div class="suggest-component">
   <mat-form-field class="suggest-form">
     <mat-label>Start typing karma topic to search (e.g.: java, aws, algorithms)</mat-label>
 
@@ -35,7 +35,7 @@
   </div>
 
   <div class="full-width flex-column">
-    <button mat-raised-button>Create feed</button>
+    <button mat-raised-button (click)="navigateToFeed()">Create feed</button>
   </div>
 
   <div>
