@@ -19,9 +19,10 @@ case class StackExchangeQuestion(tags: List[String],
       name = title,
       description = None,
       link = link,
+      site = URI.create(link.getHost),
       parentLink = None,
       created = creation_date,
-      source = KarmaFeedItemSources.Reddit
+      source = KarmaFeedItemSources.StackExchange
     )
   }
 }

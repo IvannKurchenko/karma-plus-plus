@@ -5,20 +5,21 @@
   </div>
 
   <div>
-    <mat-card *ngFor="let item of feed" class="feed-item-box" (click)="openItem(item)">
+    <mat-card *ngFor="let item of feed" class="feed-item-box">
       <div class="flex-row">
-        <!--<img class="suggest-site-logo" src="{{suggestion.site}}/favicon.ico">-->
+        <img class="feed-item-icon" src="{{item.site}}/favicon.ico">
         <mat-card-header>
-          <mat-card-title>{{item.name}}</mat-card-title>
-          <mat-card-subtitle>
-            {{item.description}}
+          <mat-card-title class="feed-item-title" (click)="openItem(item)">{{item.name}}</mat-card-title>
+          <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
+          <mat-card-subtitle (show)="item.parentLink">
+            From: <a href="{{item.parentLink}}" target="_blank">{{item.parentLink}}</a>
           </mat-card-subtitle>
         </mat-card-header>
       </div>
     </mat-card>
 
     <div [hidden]="inProgress">
-      <mat-paginator ></mat-paginator>
+      <mat-paginator></mat-paginator>
     </div>
   </div>
 

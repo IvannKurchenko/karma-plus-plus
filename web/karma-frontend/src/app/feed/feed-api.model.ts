@@ -14,6 +14,7 @@ export interface FeedItem {
   description?: string,
   source: string,
   link: string,
+  site: string,
   parentLink?: string,
   created: number
 }

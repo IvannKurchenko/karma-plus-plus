@@ -19,6 +19,7 @@ case class SubredditFeed(subreddit: String,
       name = title,
       description = selftext,
       link = URI.create(s"https://www.reddit.com$permalink"),
+      site = RedditAutocompleteItem.redditSite,
       parentLink = Some(URI.create(s"https://www.reddit.com/$subreddit_name_prefixed")),
       created = created_utc,
       source = KarmaFeedItemSources.Reddit

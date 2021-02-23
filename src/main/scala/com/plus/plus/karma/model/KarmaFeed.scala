@@ -36,6 +36,7 @@ case class KarmaFeedItem(name: String,
                          description: Option[String],
                          source: KarmaFeedItemSource,
                          link: URI,
+                         site: URI,
                          parentLink: Option[URI],
                          created: Long)
 

@@ -36,7 +36,17 @@ case class GithubSearchItem(url: URI,
       name = title,
       description = Some(body),
       link = url,
-      parentLink = Some(repository_url),
+      site = GithubLanguageIndex.githubSite,
+      parentLink = {
+        /*
+         * Via GiHub API repository URL returned has API form e.g:
+         * https://api.github.com/repos/FasterXML/jackson-module-scala
+         * And in order to show properly on UI, we need to move to form suitable to open via link, e.g:
+         * https://github.com/FasterXML/jackson-module-scala
+         */
+        val path = repository_url.getPath.stripPrefix("/").stripPrefix("repos/")
+        Some(URI.create(s"https://github.com/$path"))
+      },
       created = created_at.toEpochSecond,
       source = KarmaFeedItemSources.Github,
     )
