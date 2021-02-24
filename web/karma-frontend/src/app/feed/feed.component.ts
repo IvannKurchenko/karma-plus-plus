@@ -3,6 +3,7 @@ import {ActivatedRoute} from "@angular/router";
 import {FeedApiService} from "./feed-api.service";
 import {FeedRequestQueryParameters} from "../common/items-query-parameters";
 import {Feed, FeedItem} from "./feed-api.model";
+import {RenderedFeedItemModel} from "./rendered-feed-item.model";
 
 @Component({
   selector: 'feed',
@@ -12,7 +13,7 @@ import {Feed, FeedItem} from "./feed-api.model";
 export class FeedComponent implements OnInit {
 
   inProgress: Boolean = false;
-  feed: FeedItem[] = [];
+  feed: RenderedFeedItemModel[] = [];
 
   constructor(private feedApiService: FeedApiService,
               private route: ActivatedRoute) {
@@ -31,7 +32,7 @@ export class FeedComponent implements OnInit {
 
   private onFeedRetrieved(feed: Feed) {
     this.inProgress = false;
-    this.feed = feed.items;
+    this.feed = feed.items.map(item => new RenderedFeedItemModel(item));
   }
 
   openItem(item: FeedItem) {

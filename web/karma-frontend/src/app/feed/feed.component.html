@@ -10,7 +10,17 @@
         <img class="feed-item-icon" src="{{item.site}}/favicon.ico">
         <mat-card-header>
           <mat-card-title class="feed-item-title" (click)="openItem(item)">{{item.name}}</mat-card-title>
-          <mat-card-subtitle>{{item.description}}</mat-card-subtitle>
+          <mat-card-subtitle>
+            {{item.getDescription()}}
+            <span class="feed-item-description-expand"
+                  [hidden]="!item.showLess()"
+                  (click)="item.triggerShortDescription()">Show Less</span>
+
+            <span class="feed-item-description-expand"
+                  [hidden]="!item.showMore()"
+                  (click)="item.triggerShortDescription()">Show More</span>
+          </mat-card-subtitle>
+
           <mat-card-subtitle (show)="item.parentLink">
             From: <a href="{{item.parentLink}}" target="_blank">{{item.parentLink}}</a>
           </mat-card-subtitle>
