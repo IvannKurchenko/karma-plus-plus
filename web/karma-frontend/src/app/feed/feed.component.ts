@@ -35,7 +35,7 @@ export class FeedComponent implements OnInit {
     this.feed = feed.items.map(item => new RenderedFeedItemModel(item));
   }
 
-  openItem(item: FeedItem) {
+  openItem(item: RenderedFeedItemModel) {
     window.open(item.link, '_blank');
   }
 }

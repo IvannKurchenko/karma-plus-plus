@@ -1,4 +1,5 @@
 import {FeedItem} from "./feed-api.model";
+import * as moment from "moment";
 
 export class RenderedFeedItemModel {
   private static maxLength = 500;
@@ -9,7 +10,7 @@ export class RenderedFeedItemModel {
   public link: string;
   public site: string;
   public parentLink?: string;
-  public created: number
+  public created: string;
 
   public showShortDescription: boolean;
   public longDescription: boolean;
@@ -21,7 +22,7 @@ export class RenderedFeedItemModel {
     this.link = item.link;
     this.site = item.site;
     this.parentLink = item.parentLink;
-    this.created = item.created;
+    this.created = moment.unix(item.created).format("DD-MM-YYYY HH:mm:ss");
 
     this.showShortDescription = true;
     this.longDescription = this.description.length > RenderedFeedItemModel.maxLength;
