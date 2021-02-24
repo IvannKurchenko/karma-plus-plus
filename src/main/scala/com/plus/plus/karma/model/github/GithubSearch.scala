@@ -35,7 +35,7 @@ case class GithubSearchItem(url: URI,
     KarmaFeedItem(
       name = title,
       description = Some(body),
-      link = url,
+      link = URI.create(html_url),
       site = GithubLanguageIndex.githubSite,
       parentLink = {
         /*
