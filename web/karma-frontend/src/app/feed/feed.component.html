@@ -30,7 +30,13 @@
     </mat-card>
 
     <div [hidden]="inProgress">
-      <mat-paginator></mat-paginator>
+      <mat-paginator class="feed-item-pagination"
+                     [pageSize]="pageSize"
+                     [pageSizeOptions]="pageSizeOptions"
+                     [pageIndex]="pageIndex"
+                     [length]="1000"
+                     (page)="onPageEvent($event)">
+      </mat-paginator>
     </div>
   </div>
 
