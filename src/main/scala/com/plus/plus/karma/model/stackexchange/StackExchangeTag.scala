@@ -16,6 +16,10 @@ case class SiteStackExchangeTag(site: StackExchangeSite, tag: StackExchangeTag) 
   }
 }
 
+object SiteStackExchangeTag {
+  implicit val codec: Codec[SiteStackExchangeTag] = deriveCodec
+}
+
 case class StackExchangeTag(has_synonyms: Boolean,
                             is_moderator_only: Boolean,
                             is_required: Boolean,

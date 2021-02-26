@@ -20,10 +20,10 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
       _ <- Logger[F].info(s"Start searching feed for request: $request")
       github <- sourceFeed(request, KarmaFeedItemSources.Github)(githubFeed)
       reddit <- sourceFeed(request, KarmaFeedItemSources.Reddit)(redditFeed)
-      //stackExchange <- sourceFeed(request, KarmaFeedItemSources.StackExchange)(stackExchangeFeed)
+      stackExchange <- sourceFeed(request, KarmaFeedItemSources.StackExchange)(stackExchangeFeed)
       _ <- Logger[F].info(s"Finished searching feed for request: $request")
     } yield {
-      val items = (github ++ reddit).sortBy(_.created).reverse
+      val items = (github ++ reddit ++ stackExchange).sortBy(_.created).reverse
       KarmaFeed(items)
     }
   }
@@ -47,6 +47,8 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
 
   private def stackExchangeFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
     val pageSize = 10
-    List.empty[KarmaFeedItem].pure ///items.traverse(stackExchangeService.questions(_, pageSize, )).
+    items.traverse { item =>
+      stackExchangeService.questions(page, pageSize, item.subSource, item.name).map(_.items.map(_.asKarmaFeedItem))
+    }
   }
 }

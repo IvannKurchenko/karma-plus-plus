@@ -1,8 +1,6 @@
 package com.plus.plus.karma
 
 import cats.effect._
-import cats.implicits._
-import cats.syntax._
 import com.plus.plus.karma.di.ApplicationModule
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
@@ -18,13 +16,9 @@ object KarmaApp extends IOApp {
     val module = applicationModule
     for {
       config <- ApplicationConfig.load
-      _ <- prefetchData(module)
+      _ <- module.servicesModule.feedSuggestionsService.prefetchSuggestionData
       exitCode <- startServer(config, module)
     } yield exitCode
-  }
-
-  private def prefetchData(module: ApplicationModule[IO]) = {
-    IO.unit //module.servicesModule.feedSuggestionsService.prefetchSuggestionData
   }
 
   private def startServer(applicationConfig: ApplicationConfig, module: ApplicationModule[IO]): IO[ExitCode] = {
