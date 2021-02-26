@@ -13,9 +13,9 @@ import scala.concurrent.ExecutionContext
 
 object KarmaApp extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    val module = applicationModule
     for {
       config <- ApplicationConfig.load
+      module = applicationModule(config)
       _ <- module.servicesModule.feedSuggestionsService.prefetchSuggestionData
       exitCode <- startServer(config, module)
     } yield exitCode
@@ -37,11 +37,11 @@ object KarmaApp extends IOApp {
     Router("/api" -> api, "/build" -> build).orNotFound
   }
 
-  private def applicationModule: ApplicationModule[IO] = {
+  private def applicationModule(config: ApplicationConfig): ApplicationModule[IO] = {
     implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
     implicit val http4sClientDsl: Http4sClientDsl[IO] = org.http4s.client.dsl.io
     implicit val mode: Mode[IO] = scalacache.CatsEffect.modes.async
 
-    new ApplicationModule[IO]
+    new ApplicationModule[IO](config)
   }
 }

@@ -15,7 +15,7 @@ import scalacache.caffeine.CaffeineCache
 import better.files._
 
 import scala.concurrent.duration._
-import fs2.{Stream, text}
+import fs2.Stream
 
 class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
                                                                         redditService: RedditService[F],
