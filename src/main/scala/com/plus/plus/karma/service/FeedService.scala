@@ -49,6 +49,6 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
     val pageSize = 10
     items.traverse { item =>
       stackExchangeService.questions(page, pageSize, item.subSource, item.name).map(_.items.map(_.asKarmaFeedItem))
-    }
+    }.map(_.flatten)
   }
 }

@@ -13,6 +13,7 @@ object DependencySettings {
     val scalaCacheVersion = "0.28.0"
     val catsRetryVersion = "2.1.0"
     val betterFilesVersion = "3.9.1"
+    val fs2Version = "2.5.0"
 
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -37,6 +38,9 @@ object DependencySettings {
       "com.github.cb372" %% "scalacache-core" % scalaCacheVersion,
       "com.github.cb372" %% "scalacache-caffeine" % scalaCacheVersion,
       "com.github.cb372" %% "scalacache-cats-effect" % scalaCacheVersion,
+
+      "co.fs2" %% "fs2-core" % fs2Version,
+      "co.fs2" %% "fs2-io" % fs2Version,
 
       "com.github.cb372" %% "cats-retry" % catsRetryVersion,
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
