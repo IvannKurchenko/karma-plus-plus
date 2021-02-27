@@ -2,7 +2,7 @@ package com.plus.plus.karma.di
 
 import cats.effect.{Async, Blocker, ContextShift, Timer}
 import com.plus.plus.karma.ApplicationConfig
-import com.plus.plus.karma.service.RestService
+import com.plus.plus.karma.service.HttpService
 import org.http4s.client.{Client, JavaNetClientBuilder}
 import com.softwaremill.macwire.wire
 
@@ -19,5 +19,4 @@ class HttpClientModule[F[_]: ContextShift: Timer: Async](config: ApplicationConf
     }
     JavaNetClientBuilder[F](blocker).withProxyOption(proxyConfig).create
   }
-  val rest: RestService[F] = wire[RestService[F]]
 }

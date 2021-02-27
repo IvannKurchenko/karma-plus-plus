@@ -26,8 +26,8 @@ object KarmaApp extends IOApp {
        * So not more then 30 requests per second - but let's have 10 to be on safe side, because SE blocks IP then
        * for 24 hours in case of throttle violation.
        */
-      exitCode <- Limiter.start[IO](15 every 1.second).use { implicit limiter =>
-        val module = applicationModule(config)
+      exitCode <- Limiter.start[IO](15 every 1.second).use { stackExchangeLimiter =>
+        val module = applicationModule(config, stackExchangeLimiter)
         for {
           _ <- module.servicesModule.feedSuggestionsService.prefetchSuggestionData
           exitCode <- startServer(config, module)
@@ -52,11 +52,13 @@ object KarmaApp extends IOApp {
     Router("/api" -> api, "/build" -> build).orNotFound
   }
 
-  private def applicationModule(config: ApplicationConfig)(implicit limiter: Limiter[IO]): ApplicationModule[IO] = {
+  private def applicationModule(config: ApplicationConfig,
+                                stackExchangeLimiter: Limiter[IO]): ApplicationModule[IO] = {
+
     implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
     implicit val http4sClientDsl: Http4sClientDsl[IO] = org.http4s.client.dsl.io
     implicit val mode: Mode[IO] = scalacache.CatsEffect.modes.async
 
-    new ApplicationModule[IO](config)
+    new ApplicationModule[IO](config, stackExchangeLimiter)
   }
 }

@@ -17,8 +17,9 @@ import upperbound.Limiter
 
 import java.net.InetAddress
 
-class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: Limiter](httpClient: Client[F])
-                                                                                         (implicit ME: MonadError[F, Throwable]) {
+class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: ContextShift]
+                          (httpClient: Client[F], limiter: Limiter[F])(implicit ME: MonadError[F, Throwable]) {
+
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
@@ -30,7 +31,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent:
    */
   def tags(page: Int, pageSize: Int = defaultPageSize, site: String): F[StackExchangeTags] = {
     val uri = s"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=$site&page=$page&pagesize=$pageSize"
-    Limiter.await(get[StackExchangeTags](uri))
+    get[StackExchangeTags](uri)
   }
 
   /**
@@ -39,7 +40,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent:
    */
   def sites(page: Int, pageSize: Int = defaultPageSize): F[StackExchangeSites] = {
     val uri = s"https://api.stackexchange.com/2.2/sites?page=$page&pagesize=$pageSize"
-    Limiter.await(get[StackExchangeSites](uri))
+    get[StackExchangeSites](uri)
   }
 
   /**
@@ -48,15 +49,16 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent:
    */
   def questions(page: Int, pageSize: Int = defaultPageSize, site: String, tag: String): F[StackExchangeQuestions] = {
     val uri = s"https://api.stackexchange.com/2.2/questions?page=$page&pagesize=$pageSize&order=desc&sort=creation&site=$site&tagged=$tag"
-    Limiter.await(get[StackExchangeQuestions](uri))
+    get[StackExchangeQuestions](uri)
   }
 
   private def get[A: Decoder](url: String): F[A] = {
     for {
       uri <- Uri.fromString(url).liftTo[F]
-      localhost <- implicitly[Sync[F]].delay(InetAddress.getLocalHost.getHostName)
+      localhost <- Sync[F].delay(InetAddress.getLocalHost.getHostName)
       request <- GET(uri, Host(localhost))
-      result <- GZip()(httpClient).expect[A](request)(jsonOf[F, A])
+      service <- HttpService[F](GZip()(httpClient), limiter)
+      result <- service.expect[A](request)(jsonOf[F, A])
     } yield result
   }
 }

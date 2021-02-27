@@ -10,10 +10,12 @@ import org.http4s.circe.jsonOf
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.Method._
 import org.http4s.Uri
+import org.http4s.client.Client
 import scalacache.Mode
 
-class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest: RestService[F])
-                                                                           (implicit ME: MonadError[F, Throwable]) {
+class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: ContextShift]
+                   (httpClient: Client[F])(implicit ME: MonadError[F, Throwable]) {
+
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
@@ -35,7 +37,8 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](rest
     for {
       uri <- Uri.fromString(url).liftTo[F]
       request <- GET(uri, `User-Agent`(AgentProduct("karma")))
-      result <- rest.expect[A](request)(jsonOf[F, A])
+      service <- HttpService[F](httpClient)
+      result <- service.expect[A](request)(jsonOf[F, A])
     } yield result
   }
 }

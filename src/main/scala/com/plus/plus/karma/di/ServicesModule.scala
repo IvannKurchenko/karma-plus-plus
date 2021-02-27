@@ -8,8 +8,8 @@ import org.http4s.client.dsl.Http4sClientDsl
 import scalacache.Mode
 import upperbound.Limiter
 
-class ServicesModule[F[_] : Mode : Http4sClientDsl : ContextShift : Timer : Concurrent : Limiter](config: ApplicationConfig,
-                                                                                                  httpClientModule: HttpClientModule[F]) {
+class ServicesModule[F[_] : Mode : Http4sClientDsl : ContextShift : Timer : Concurrent]
+                    (config: ApplicationConfig, stackExchangeLimiter: Limiter[F], httpClientModule: HttpClientModule[F]) {
 
   import httpClientModule._
 
