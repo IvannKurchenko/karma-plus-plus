@@ -15,6 +15,8 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
 
   private implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
+  private val pageSize = 10
+
   def feed(request: KarmaFeedRequest): F[KarmaFeed] = {
     for {
       _ <- Logger[F].info(s"Start searching feed for request: $request")
@@ -31,22 +33,27 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
   private def sourceFeed(request: KarmaFeedRequest, source: KarmaFeedItemSource)
                         (f: (List[KarmaFeedItemRequest], Int) => F[List[KarmaFeedItem]]): F[List[KarmaFeedItem]] = {
     val items = request.source(source)
-    if (items.nonEmpty) f(items, request.page.getOrElse(1)) else List.empty[KarmaFeedItem].pure
+    if (items.nonEmpty) {
+      /*
+       * If some underlying service unavailable - show at least others.
+       */
+      f(items, request.page.getOrElse(1)).recoverWith(_ => List.empty[KarmaFeedItem].pure)
+    } else {
+      List.empty[KarmaFeedItem].pure
+    }
   }
 
   private def githubFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
-    githubService.searchIssues(items.map(_.name), page, 10).map(_.items.map(_.asKarmaFeedItem))
+    githubService.searchIssues(items.map(_.name), page, pageSize).map(_.items.map(_.asKarmaFeedItem))
   }
 
   private def redditFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
-    val limit = 10
-    val count = limit * page
-    items.map(_.name).traverse(redditService.subredditsPosts(_, limit, count)).
+    val count = pageSize * page
+    items.map(_.name).traverse(redditService.subredditsPosts(_, pageSize, count)).
       map(_.flatMap(_.data.children.map(_.data.asKarmaFeedItem)))
   }
 
   private def stackExchangeFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
-    val pageSize = 10
     items.traverse { item =>
       stackExchangeService.questions(page, pageSize, item.subSource, item.name).map(_.items.map(_.asKarmaFeedItem))
     }.map(_.flatten)

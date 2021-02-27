@@ -35,4 +35,5 @@ case class StackExchangeQuestions(items: List[StackExchangeQuestion], has_more: 
 
 object StackExchangeQuestions {
   implicit val codec: Codec[StackExchangeQuestions] = deriveCodec
+  val empty: StackExchangeQuestions = StackExchangeQuestions(Nil, has_more = false)
 }

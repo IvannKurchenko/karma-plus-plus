@@ -20,7 +20,7 @@ import scala.concurrent.duration._
  */
 class HttpService[F[_]: Sync: Sleep: Timer: ContextShift: Limiter: Concurrent](httpClient: Client[F]) {
   private val retryPolicy = RetryPolicies.
-    constantDelay(1.second).
+    constantDelay(200.millis).
     join(RetryPolicies.limitRetries[F](5))
 
   def expect[A](uri: String)(implicit d: EntityDecoder[F, A]): F[A] = {
