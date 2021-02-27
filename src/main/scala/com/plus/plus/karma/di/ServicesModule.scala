@@ -1,15 +1,18 @@
 package com.plus.plus.karma.di
 
-import cats.effect.{Async, ContextShift, Timer}
+import cats.effect.{Async, Concurrent, ContextShift, Timer}
 import com.plus.plus.karma.ApplicationConfig
 import com.plus.plus.karma.service._
 import com.softwaremill.macwire.wire
 import org.http4s.client.dsl.Http4sClientDsl
 import scalacache.Mode
+import upperbound.Limiter
 
-class ServicesModule[F[_]: Mode: Http4sClientDsl: ContextShift: Timer: Async](config: ApplicationConfig,
-                                                                              httpClientModule: HttpClientModule[F]) {
+class ServicesModule[F[_] : Mode : Http4sClientDsl : ContextShift : Timer : Concurrent : Limiter](config: ApplicationConfig,
+                                                                                                  httpClientModule: HttpClientModule[F]) {
+
   import httpClientModule._
+
   val githubService = wire[GithubService[F]]
   val redditService = wire[RedditService[F]]
   val stackExchangeService = wire[StackExchangeService[F]]

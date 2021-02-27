@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.syntax.all._
 import cats.effect._
 import com.plus.plus.karma.model._
-import com.plus.plus.karma.model.stackexchange.{SiteStackExchangeTag, StackExchangeSite, StackExchangeSites, StackExchangeTags}
+import com.plus.plus.karma.model.stackexchange._
 import com.plus.plus.karma.service.FeedSuggestionsService._
 import io.circe.syntax._
 import io.circe._
@@ -99,7 +99,8 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
       _ <- {
         (stackExchangeSites >>= fetchStackExchangeTags).
           map(_.asJson.noSpaces).
-          evalMap(json => Sync[F].delay(stackExchangeFileCache.append(json))).
+          chunkN(100).
+          evalMap(json => Sync[F].delay(stackExchangeFileCache.appendLines(json.toList:_*))).
           compile.
           drain
       }
@@ -114,7 +115,6 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
         _ <- Logger[F].info(s"Start fetching StackExchange tags at page: $page for site $siteName")
         tags <- stackExchangeService.tags(page, 100, siteName)
         _ <- Logger[F].info(s"Finished fetching StackExchange tags at page: $page")
-        _ <- Timer[F].sleep(1.second)
       } yield tags
     }
 
@@ -130,7 +130,6 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
         _ <- Logger[F].info(s"Start fetching StackExchange sites at page: $page")
         sites <- stackExchangeService.sites(page, 100)
         _ <- Logger[F].info(s"Finished fetching StackExchange sites at page: $page")
-        _ <- Timer[F].sleep(1.second)
       } yield sites
     }
 

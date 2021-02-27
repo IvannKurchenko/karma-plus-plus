@@ -43,6 +43,7 @@ object DependencySettings {
       "co.fs2" %% "fs2-io" % fs2Version,
 
       "com.github.cb372" %% "cats-retry" % catsRetryVersion,
+      "org.systemfw" %% "upperbound" % "0.3.0",
       "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
 
       "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,

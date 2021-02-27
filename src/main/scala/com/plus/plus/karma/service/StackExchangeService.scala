@@ -13,11 +13,12 @@ import org.http4s.Uri
 import org.http4s.client.Client
 import org.http4s.client.middleware.GZip
 import scalacache.Mode
+import upperbound.Limiter
 
 import java.net.InetAddress
 
-class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShift](httpClient: Client[F])
-                                                                                  (implicit ME: MonadError[F, Throwable]) {
+class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: Limiter](httpClient: Client[F])
+                                                                                         (implicit ME: MonadError[F, Throwable]) {
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._
 
@@ -29,7 +30,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
    */
   def tags(page: Int, pageSize: Int = defaultPageSize, site: String): F[StackExchangeTags] = {
     val uri = s"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=$site&page=$page&pagesize=$pageSize"
-    get[StackExchangeTags](uri)
+    Limiter.await(get[StackExchangeTags](uri))
   }
 
   /**
@@ -38,7 +39,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
    */
   def sites(page: Int, pageSize: Int = defaultPageSize): F[StackExchangeSites] = {
     val uri = s"https://api.stackexchange.com/2.2/sites?page=$page&pagesize=$pageSize"
-    get[StackExchangeSites](uri)
+    Limiter.await(get[StackExchangeSites](uri))
   }
 
   /**
@@ -47,7 +48,7 @@ class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: ContextShif
    */
   def questions(page: Int, pageSize: Int = defaultPageSize, site: String, tag: String): F[StackExchangeQuestions] = {
     val uri = s"https://api.stackexchange.com/2.2/questions?page=$page&pagesize=$pageSize&order=desc&sort=creation&site=$site&tagged=$tag"
-    get[StackExchangeQuestions](uri)
+    Limiter.await(get[StackExchangeQuestions](uri))
   }
 
   private def get[A: Decoder](url: String): F[A] = {
