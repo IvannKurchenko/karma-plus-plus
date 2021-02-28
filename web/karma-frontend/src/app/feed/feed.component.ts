@@ -1,7 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FeedApiService} from "./feed-api.service";
-import {FeedRequestQueryParameters} from "../common/items-query-parameters";
+import {QueryParametersModel} from "../common/items-query-parameters";
 import {Feed} from "./feed-api.model";
 import {RenderedFeedItemModel} from "./rendered-feed-item.model";
 import {PageEvent} from "@angular/material/paginator";
@@ -31,10 +31,6 @@ export class FeedComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadFeed();
-  }
-
-  private loadFeed(): void {
     this.route.queryParams.subscribe(params => {
       this.currentFeed = params['feed'];
 
@@ -44,7 +40,7 @@ export class FeedComponent implements OnInit {
       let pageSizeParam = params['pageSize'];
       this.pageSize = pageSizeParam ? pageSizeParam : FeedComponent.DefaultPageSize;
 
-      let request = FeedRequestQueryParameters.parse(params);
+      let request = QueryParametersModel.parseFeedRequest(params);
       this.inProgress = true;
       this.feed = [];
       this.feedApiService.getFeed(request).subscribe(
@@ -69,6 +65,5 @@ export class FeedComponent implements OnInit {
       pageSize: pageEvent.pageSize
     };
     this.router.navigate(['/feed'], {queryParams: params});
-    this.loadFeed();
   }
 }

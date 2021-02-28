@@ -32,14 +32,15 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
 
   private def sourceFeed(request: KarmaFeedRequest, source: KarmaFeedItemSource)
                         (f: (List[KarmaFeedItemRequest], Int) => F[List[KarmaFeedItem]]): F[List[KarmaFeedItem]] = {
+    val empty = List.empty[KarmaFeedItem].pure
     val items = request.source(source)
     if (items.nonEmpty) {
       /*
        * If some underlying service unavailable - show at least others.
        */
-      f(items, request.page.getOrElse(1)).recoverWith(_ => List.empty[KarmaFeedItem].pure)
+      f(items, request.page.getOrElse(1)).recoverWith(_ => empty)
     } else {
-      List.empty[KarmaFeedItem].pure
+      empty
     }
   }
 
@@ -48,8 +49,8 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
   }
 
   private def redditFeed(items: List[KarmaFeedItemRequest], page: Int): F[List[KarmaFeedItem]] = {
-    val count = pageSize * page
-    items.map(_.name).traverse(redditService.subredditsPosts(_, pageSize, count)).
+    val skip = pageSize * page
+    items.map(_.name).traverse(redditService.subredditsPosts(_, pageSize, skip)).
       map(_.flatMap(_.data.children.map(_.data.asKarmaFeedItem)))
   }
 

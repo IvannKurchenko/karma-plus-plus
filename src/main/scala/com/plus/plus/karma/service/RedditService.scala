@@ -22,8 +22,8 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: Contex
   /**
    * List newest reddit posts. API documentation: https://www.reddit.com/dev/api/#GET_new
    */
-  def subredditsPosts(name: String, limit: Int, count: Int): F[RedditListing[SubredditFeed]] = {
-    get(s"https://www.reddit.com/r/$name/new.json?limit=$limit&count=$count")
+  def subredditsPosts(name: String, limit: Int, skip: Int): F[RedditListing[SubredditFeed]] = {
+    get(s"https://www.reddit.com/r/$name/new.json?limit=$limit&after=$skip")
   }
 
   /**

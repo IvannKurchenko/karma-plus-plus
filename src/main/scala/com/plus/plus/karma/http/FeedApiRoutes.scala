@@ -22,8 +22,16 @@ class FeedApiRoutes[F[_] : Async](feedService: FeedService[F],
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / "suggest" / term =>
       for {
-        suggestion <- feedSuggestionsService.suggestions(term)
+        suggestion <- feedSuggestionsService.autocompleteSuggestions(term)
         response <- Ok(suggestion.asJson)
+      } yield response
+
+    case request@POST -> Root / "suggest" =>
+      implicit val decoder = jsonOf[F, KarmaFeedRequest]
+      for {
+        feedRequest <- request.as[KarmaFeedRequest]
+        feed <- feedSuggestionsService.exactSuggestions(feedRequest)
+        response <- Ok(feed.asJson)
       } yield response
 
     case request@POST -> Root / "feed" =>

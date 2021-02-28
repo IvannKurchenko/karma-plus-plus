@@ -3,7 +3,7 @@ package com.plus.plus.karma.service
 import cats.Applicative
 import cats.syntax.all._
 import cats.effect._
-import com.plus.plus.karma.model._
+import com.plus.plus.karma.model.{KarmaFeedRequest, _}
 import com.plus.plus.karma.model.stackexchange._
 import com.plus.plus.karma.service.FeedSuggestionsService._
 import io.circe.syntax._
@@ -29,31 +29,61 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
 
   private val stackExchangeFileCache = File("data/stack-exchange-tags.json")
 
-  def suggestions(term: String): F[KarmaSuggest] = {
-    val normalized = normalize(term)
-    if (normalized.nonEmpty) {
+
+  def autocompleteSuggestions(termPrefix: String): F[KarmaSuggest] = {
+    val normalizedPrefix = normalize(termPrefix)
+    if (normalizedPrefix.nonEmpty) {
       for {
-        reddit <- redditSuggestions(normalized)
-        github <- githubSuggestions(normalized)
-        stackExchange <- stackExchangeSuggestions(normalized)
+        reddit <- autocompleteRedditSuggestions(normalizedPrefix)
+        github <- autocompleteGithubSuggestions(normalizedPrefix)
+        stackExchange <- autocompleteStackExchangeSuggestions(normalizedPrefix)
       } yield KarmaSuggest(github ++ reddit ++ stackExchange)
     } else {
       KarmaSuggest.empty.pure
     }
   }
 
-  private def redditSuggestions(term: String): F[List[KarmaSuggestItem]] = {
+  def exactSuggestions(request: KarmaFeedRequest): F[KarmaSuggest] = {
+    for {
+      reddit <- exactRedditSuggestions(request.source(KarmaFeedItemSources.Reddit))
+      github <- exactGithubSuggestions(request.source(KarmaFeedItemSources.Github))
+      stackExchange <- exactStackExchangeSuggestions(request.source(KarmaFeedItemSources.StackExchange))
+    } yield KarmaSuggest(reddit ++ github ++ stackExchange)
+  }
+
+  private def autocompleteRedditSuggestions(term: String): F[List[KarmaSuggestItem]] = {
     redditService.autocomplete(term).map(_.subreddits.filterNot(_.numSubscribers == 0).map(_.toKarmaSuggest))
   }
 
-  private def githubSuggestions(term: String): F[List[KarmaSuggestItem]] = {
+  private def exactRedditSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
+    items.traverse { item =>
+      val normalItem = item.name.toLowerCase
+      autocompleteRedditSuggestions(normalItem).map(_.filter(_.name == normalItem))
+    }.map(_.flatten)
+  }
+
+  private def autocompleteGithubSuggestions(term: String): F[List[KarmaSuggestItem]] = {
     githubAllSuggestions.map { languages =>
       languages.items.filter(language => normalize(language.name).startsWith(term))
     }
   }
 
-  private def stackExchangeSuggestions(term: String): F[List[KarmaSuggestItem]] = {
+  private def exactGithubSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
+    val names = items.map(_.name).map(normalize).toSet
+    githubAllSuggestions.map { languages =>
+      languages.items.filter(language => names.contains(normalize(language.name)))
+    }
+  }
+
+  private def autocompleteStackExchangeSuggestions(term: String): F[List[KarmaSuggestItem]] = {
     stackExchangeTags.map(_.items.filter(_.name.startsWith(term)))
+  }
+
+  private def exactStackExchangeSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
+    val names = items.map(_.name).toSet
+    stackExchangeTags.map { tags =>
+      tags.items.filter(tag => names.contains(tag.name))
+    }
   }
 
   /*

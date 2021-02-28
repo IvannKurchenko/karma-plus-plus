@@ -2,8 +2,9 @@ import {Params} from "@angular/router";
 import {FeedRequest} from "../feed/feed-api.model";
 import {SuggestItemApiModel} from "../suggest/suggest-api.model";
 
-export class FeedRequestQueryParameters {
-  static parse(params: Params): FeedRequest {
+export class QueryParametersModel {
+  static parseFeedRequest(params: Params): FeedRequest {
+    let page: number = params['page'];
     let feed: string[] = params['feed'];
     let items =  feed.map(function (item) {
       let feedParts: string[] = item.split(';');
@@ -15,7 +16,8 @@ export class FeedRequestQueryParameters {
     });
 
     return {
-      items: items
+      items: items,
+      page: page
     };
   }
 

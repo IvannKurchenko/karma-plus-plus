@@ -19,7 +19,7 @@ case class StackExchangeQuestion(tags: List[String],
       name = title,
       description = None,
       link = link,
-      site = URI.create(link.getHost),
+      site = URI.create(s"https://${link.getHost}"),
       parentLink = None,
       created = creation_date,
       source = KarmaFeedItemSources.StackExchange

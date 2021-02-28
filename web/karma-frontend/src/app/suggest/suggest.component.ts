@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {FeedRequestQueryParameters} from "../common/items-query-parameters";
+import {Component, OnInit} from '@angular/core';
+import {QueryParametersModel} from "../common/items-query-parameters";
 import {SuggestApiService} from "./suggest-api.service";
 import {SuggestionsApiModel, SuggestItemApiModel} from "./suggest-api.model";
 import {BooleanInput} from "@angular/cdk/coercion";
@@ -11,7 +11,7 @@ import {ActivatedRoute, Router} from "@angular/router";
   templateUrl: './suggest.component.html',
   styleUrls: ['./suggest.component.less']
 })
-export class SuggestComponent {
+export class SuggestComponent implements OnInit {
   suggestion: String = '';
   inProgress: Boolean = false;
 
@@ -29,9 +29,14 @@ export class SuggestComponent {
   }
 
   ngOnInit() {
-    /*this.route.queryParams.subscribe(params => {
-      this.selectedSuggestions = params['name'];
-    });*/
+    this.route.queryParams.subscribe(params => {
+      let request = QueryParametersModel.parseFeedRequest(params);
+      if(request.items.length > 0) {
+        this.suggestApiService.searchSuggestions(request).subscribe(
+          suggestions => this.selectedSuggestions = suggestions.items
+        );
+      }
+    });
   }
 
   onSuggestInputChange(): void {
@@ -68,7 +73,7 @@ export class SuggestComponent {
   }
 
   navigateToFeed(): void {
-    let params = FeedRequestQueryParameters.format(this.selectedSuggestions);
+    let params = QueryParametersModel.format(this.selectedSuggestions);
     this.router.navigate(['/feed'], {queryParams: params});
   }
 }
