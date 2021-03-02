@@ -4,6 +4,7 @@ import cats.MonadError
 import cats.effect._
 import cats.syntax.all._
 import com.plus.plus.karma.model.reddit._
+import com.plus.plus.karma.service.RedditService.SubredditPagination
 import io.circe.Decoder
 import org.http4s.headers._
 import org.http4s.circe.jsonOf
@@ -22,8 +23,13 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: Contex
   /**
    * List newest reddit posts. API documentation: https://www.reddit.com/dev/api/#GET_new
    */
-  def subredditsPosts(name: String, limit: Int, skip: Int): F[RedditListing[SubredditFeed]] = {
-    get(s"https://www.reddit.com/r/$name/new.json?limit=$limit&after=$skip")
+  def subredditsPosts(name: String, limit: Int, token: Option[SubredditPagination]): F[RedditListing[SubredditFeed]] = {
+    val params = token.map {
+      case SubredditPagination(token, true) => s"&after=$token"
+      case SubredditPagination(token, false) => s"&before=$token"
+    }.getOrElse("")
+
+    get(s"https://www.reddit.com/r/$name/new.json?limit=$limit$params")
   }
 
   /**
@@ -41,4 +47,8 @@ class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: Contex
       result <- service.expect[A](request)(jsonOf[F, A])
     } yield result
   }
+}
+
+object RedditService {
+  case class SubredditPagination(token: String, after: Boolean)
 }

@@ -23,7 +23,7 @@ case class RedditAutocompleteItem(numSubscribers: Int,
 object RedditAutocompleteItem {
   implicit val codec: Codec[RedditAutocompleteItem] = deriveCodec
 
-  val redditSite: URI = URI.create("http://reddit.com")
+  val redditSite: URI = URI.create("https://reddit.com")
 }
 
 case class RedditAutocomplete(subreddits: List[RedditAutocompleteItem])

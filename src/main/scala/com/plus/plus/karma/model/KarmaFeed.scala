@@ -2,11 +2,11 @@ package com.plus.plus.karma.model
 
 import io.circe._
 import io.circe.generic.semiauto._
-
 import com.plus.plus.karma.utils.json._
 import com.plus.plus.karma.model.KarmaFeedItemSources.KarmaFeedItemSource
 
 import java.net.URI
+import scala.util.Try
 
 object KarmaFeedItemSources extends Enumeration {
   type KarmaFeedItemSource = Value
@@ -24,7 +24,61 @@ object KarmaFeedItemRequest {
   implicit val codec: Codec[KarmaFeedItemRequest] = deriveCodec
 }
 
-case class KarmaFeedRequest(items: List[KarmaFeedItemRequest] = Nil, page: Option[Int]) {
+case class KarmaRedditPageToken(tokens: Map[String, (String, String)])
+
+object KarmaRedditPageToken {
+  def parse(string: String): KarmaRedditPageToken = {
+    val tokens = string.split('|').map { token =>
+      val subredditToken = token.split("=")
+      val subreddit = subredditToken(0)
+      val subredditBeforeAfter = subredditToken(1).split("-")
+      val before = subredditBeforeAfter(0)
+      val after = subredditBeforeAfter(1)
+
+      subreddit -> (before, after)
+    }.toMap
+    KarmaRedditPageToken(tokens)
+  }
+
+  def format(token: KarmaRedditPageToken): String = {
+    token.tokens.map {
+      case (subreddit, (before, after)) => s"$subreddit=$before-$after"
+    }.mkString("|")
+  }
+}
+
+case class KarmaFeedPageToken(page: Int, reddit: KarmaRedditPageToken)
+
+object KarmaFeedPageToken {
+  implicit val decoder: Decoder[KarmaFeedPageToken] = {
+    Decoder[String].emapTry { token =>
+      Try {
+        val split = token.split(";")
+        val page = split(0).toInt
+        val reddit = split(1)
+        KarmaFeedPageToken(page, KarmaRedditPageToken.parse(reddit))
+      }
+    }
+  }
+
+  implicit val encoder: Encoder[KarmaFeedPageToken] = {
+    Encoder[String].contramap { token =>
+      val redditTokens = KarmaRedditPageToken.format(token.reddit)
+      s"${token.page};$redditTokens"
+    }
+  }
+}
+
+case class KarmaFeedRequestPageToken(token: KarmaFeedPageToken, forward: Boolean) {
+  def nextPage: Int = token.page + (if(forward) 1 else -1)
+}
+
+object KarmaFeedRequestPageToken {
+  implicit val codec: Codec[KarmaFeedRequestPageToken] = deriveCodec
+}
+
+case class KarmaFeedRequest(items: List[KarmaFeedItemRequest] = Nil,
+                            pageToken: Option[KarmaFeedRequestPageToken]) {
   def source(source: KarmaFeedItemSource): List[KarmaFeedItemRequest] = items.filter(_.source == source)
 }
 
@@ -44,7 +98,7 @@ object KarmaFeedItem {
   implicit val codec: Codec[KarmaFeedItem] = deriveCodec
 }
 
-case class KarmaFeed(items: List[KarmaFeedItem])
+case class KarmaFeed(items: List[KarmaFeedItem], pageToken: KarmaFeedPageToken)
 
 object KarmaFeed {
   implicit val codec: Codec[KarmaFeed] = deriveCodec

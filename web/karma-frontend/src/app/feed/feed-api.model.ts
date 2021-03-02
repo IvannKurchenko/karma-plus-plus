@@ -4,9 +4,14 @@ export interface FeedItemRequest {
   name: string
 }
 
+export interface FeedRequestPage {
+  token: string,
+  forward: boolean
+}
+
 export interface FeedRequest {
   items: FeedItemRequest[],
-  page?: number
+  pageToken?: FeedRequestPage
 }
 
 export interface FeedItem {
@@ -21,5 +26,6 @@ export interface FeedItem {
 
 
 export interface Feed {
-  items: FeedItem[]
+  items: FeedItem[],
+  pageToken: string
 }

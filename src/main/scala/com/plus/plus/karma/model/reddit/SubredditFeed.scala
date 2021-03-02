@@ -10,6 +10,7 @@ case class SubredditFeed(subreddit: String,
                          subreddit_name_prefixed: String,
                          title: String,
                          ups: Int,
+                         name: String,
                          permalink: String,
                          created_utc: Long,
                          selftext: Option[String]) {

@@ -29,14 +29,22 @@
       </div>
     </mat-card>
 
-    <div [hidden]="inProgress">
-      <mat-paginator class="feed-item-pagination"
-                     [pageSize]="pageSize"
-                     [pageSizeOptions]="pageSizeOptions"
-                     [pageIndex]="pageIndex"
-                     [length]="1000"
-                     (page)="onPageEvent($event)">
-      </mat-paginator>
+    <div [hidden]="inProgress" class="feed-item-pagination space-between flex-row">
+      <button class="feed-item-page-button"
+              mat-icon-button
+              aria-label="Previous page"
+              matTooltip="Previous page"
+              (click)="paginateLeft()">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+      </button>
+
+      <button class="feed-item-page-button"
+              mat-icon-button
+              aria-label="Next page"
+              matTooltip="Next page"
+              (click)="paginateRight()">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </button>
     </div>
   </div>
 

@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FeedApiService} from "./feed-api.service";
 import {QueryParametersModel} from "../common/items-query-parameters";
-import {Feed} from "./feed-api.model";
+import {Feed, FeedRequestPage} from "./feed-api.model";
 import {RenderedFeedItemModel} from "./rendered-feed-item.model";
 import {PageEvent} from "@angular/material/paginator";
 
@@ -12,17 +12,11 @@ import {PageEvent} from "@angular/material/paginator";
   styleUrls: ['./feed.component.less']
 })
 export class FeedComponent implements OnInit {
-  private static DefaultPageSize = 10;
-  private static DefaultPage = 1;
 
   inProgress: Boolean = false;
   feed: RenderedFeedItemModel[] = [];
 
-  pageSize = FeedComponent.DefaultPageSize;
-  pageIndex = FeedComponent.DefaultPage;
-
-  pageSizeOptions: number[] = [5, 10, 25, 100];
-
+  private pageToken: string = "";
   private currentFeed: string[] = [];
 
   constructor(private feedApiService: FeedApiService,
@@ -33,16 +27,11 @@ export class FeedComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.currentFeed = params['feed'];
-
-      let pageParam = params['page'];
-      this.pageIndex = pageParam ? pageParam : FeedComponent.DefaultPage;
-
-      let pageSizeParam = params['pageSize'];
-      this.pageSize = pageSizeParam ? pageSizeParam : FeedComponent.DefaultPageSize;
-
       let request = QueryParametersModel.parseFeedRequest(params);
+
       this.inProgress = true;
       this.feed = [];
+
       this.feedApiService.getFeed(request).subscribe(
         feed => this.onFeedRetrieved(feed)
       );
@@ -51,6 +40,7 @@ export class FeedComponent implements OnInit {
 
   private onFeedRetrieved(feed: Feed) {
     this.inProgress = false;
+    this.pageToken = feed.pageToken;
     this.feed = feed.items.map(item => new RenderedFeedItemModel(item));
   }
 
@@ -58,12 +48,30 @@ export class FeedComponent implements OnInit {
     window.open(item.link, '_blank');
   }
 
-  onPageEvent(pageEvent: PageEvent): void {
+  paginateRight(): void {
+    let params = {
+      feed: this.currentFeed,
+      page: this.pageToken,
+      forward: true
+    };
+    this.router.navigate(['/feed'], {queryParams: params});
+  }
+
+  paginateLeft(): void {
+    let params = {
+      feed: this.currentFeed,
+      page: this.pageToken,
+      forward: false
+    };
+    this.router.navigate(['/feed'], {queryParams: params});
+  }
+
+  /*onPageEvent(pageEvent: PageEvent): void {
     let params = {
       feed: this.currentFeed,
       page: pageEvent.pageIndex,
       pageSize: pageEvent.pageSize
     };
     this.router.navigate(['/feed'], {queryParams: params});
-  }
+  }*/
 }

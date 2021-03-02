@@ -9,7 +9,11 @@ object RedditListingDataChildren {
   implicit def codec[T](implicit codec: Codec[T]): Codec[RedditListingDataChildren[T]] = deriveCodec
 }
 
-case class RedditListingData[T](modhash: String, dist: Int, children: List[RedditListingDataChildren[T]])
+case class RedditListingData[T](modhash: String,
+                                dist: Int,
+                                children: List[RedditListingDataChildren[T]],
+                                after: Option[String],
+                                before: Option[String])
 
 object RedditListingData {
   implicit def codec[T](implicit codec: Codec[RedditListingDataChildren[T]]): Codec[RedditListingData[T]] = deriveCodec

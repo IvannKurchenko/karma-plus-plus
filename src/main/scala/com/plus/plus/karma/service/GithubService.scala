@@ -1,5 +1,6 @@
 package com.plus.plus.karma.service
 
+import cats.data.NonEmptyList
 import cats.syntax.all._
 import cats.effect._
 import org.http4s.circe._
@@ -21,8 +22,8 @@ class GithubService[F[_]: Sync: Timer: Concurrent: ContextShift](httpClient: Cli
    * Search request, like: https://api.github.com/search/issues?q=ENCODE(state:open language:$language label:"help wanted")
    * API Documentation: https://docs.github.com/en/rest/reference/issues
    */
-  def searchIssues(languages: List[String], page: Int, perPage: Int): F[GithubSearch] = {
-    val languageQuery = languages.map(language => s"language:$language").mkString(" ")
+  def searchIssues(languages: NonEmptyList[String], page: Int, perPage: Int): F[GithubSearch] = {
+    val languageQuery = languages.map(language => s"language:$language").toList.mkString(" ")
     val query = s"""state:open $languageQuery label:"help wanted""""
     val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString)
     val url = s"https://api.github.com/search/issues?q=$encodedQuery&sort=created&page=$page&per_page=$perPage"
