@@ -27,5 +27,5 @@ export interface FeedItem {
 
 export interface Feed {
   items: FeedItem[],
-  pageToken: string
+  pageToken?: string
 }

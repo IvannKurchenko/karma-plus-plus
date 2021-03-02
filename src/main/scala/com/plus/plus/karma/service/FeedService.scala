@@ -22,7 +22,9 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
   private val empty = List.empty[KarmaFeedItem].pure
 
   def feed(request: KarmaFeedRequest): F[KarmaFeed] = {
-    val page = request.pageToken.map(_.nextPage).getOrElse(1)
+    val nextPage = request.pageToken.map(_.nextPage).getOrElse(1)
+    val page = Math.min(1, nextPage)
+    val nextTokenExists = nextPage < page
 
     for {
       _ <- Logger[F].info(s"Start searching feed for request: $request")
@@ -33,7 +35,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
     } yield {
       val (redditToken, redditFeedItems) = reddit
       val items = (github ++ redditFeedItems ++ stackExchange).sortBy(_.created).reverse
-      val token = KarmaFeedPageToken(page, redditToken)
+      val token = if(nextTokenExists) Some(KarmaFeedPageToken(page, redditToken)) else None
       KarmaFeed(items, token)
     }
   }

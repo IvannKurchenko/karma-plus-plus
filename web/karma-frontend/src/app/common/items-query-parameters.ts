@@ -3,10 +3,18 @@ import {FeedRequest} from "../feed/feed-api.model";
 import {SuggestItemApiModel} from "../suggest/suggest-api.model";
 
 export class QueryParametersModel {
+
+  static token = 'token';
+
+  static hasToken(params: Params): boolean {
+    return params[QueryParametersModel.token] != null && params[QueryParametersModel.token] != undefined;
+  }
+
   static parseFeedRequest(params: Params): FeedRequest {
-    let token: string = params['page'];
+    let token: string = params['token'];
     let forward: boolean = params['forward'] == "true";
     let feed: string[] = params['feed'];
+
     let items = feed.map(function (item) {
       let feedParts: string[] = item.split(';');
       return {

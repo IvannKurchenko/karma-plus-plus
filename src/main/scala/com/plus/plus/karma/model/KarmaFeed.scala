@@ -49,6 +49,11 @@ object KarmaRedditPageToken {
 
 case class KarmaFeedPageToken(page: Int, reddit: KarmaRedditPageToken)
 
+/**
+ * Page token stored in URL query parameters, that's why it should short string with NO URI conflicting chars like
+ * '/', '#', '%' etc. Because it should be placed in query parameter, JSON perhaps not the best option, so unsafe
+ * parsing/formatting to plain string has been chosen instead of derivation.
+ */
 object KarmaFeedPageToken {
   implicit val decoder: Decoder[KarmaFeedPageToken] = {
     Decoder[String].emapTry { token =>
@@ -98,7 +103,7 @@ object KarmaFeedItem {
   implicit val codec: Codec[KarmaFeedItem] = deriveCodec
 }
 
-case class KarmaFeed(items: List[KarmaFeedItem], pageToken: KarmaFeedPageToken)
+case class KarmaFeed(items: List[KarmaFeedItem], pageToken: Option[KarmaFeedPageToken])
 
 object KarmaFeed {
   implicit val codec: Codec[KarmaFeed] = deriveCodec

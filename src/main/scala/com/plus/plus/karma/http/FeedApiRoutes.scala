@@ -1,6 +1,5 @@
 package com.plus.plus.karma.http
 
-import cats.data.NonEmptyList
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.effect._

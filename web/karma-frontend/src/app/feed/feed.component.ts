@@ -8,6 +8,9 @@ import {PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'feed',
+  host: {
+    class:'feed-container'
+  },
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.less']
 })
@@ -15,8 +18,9 @@ export class FeedComponent implements OnInit {
 
   inProgress: Boolean = false;
   feed: RenderedFeedItemModel[] = [];
+  hasToken: boolean = false;
 
-  private pageToken: string = "";
+  private pageToken: string | undefined = undefined;
   private currentFeed: string[] = [];
 
   constructor(private feedApiService: FeedApiService,
@@ -26,11 +30,12 @@ export class FeedComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.currentFeed = params['feed'];
-      let request = QueryParametersModel.parseFeedRequest(params);
-
       this.inProgress = true;
       this.feed = [];
+      this.currentFeed = params['feed'];
+      this.hasToken = QueryParametersModel.hasToken(params);
+
+      let request = QueryParametersModel.parseFeedRequest(params);
 
       this.feedApiService.getFeed(request).subscribe(
         feed => this.onFeedRetrieved(feed)
@@ -48,7 +53,7 @@ export class FeedComponent implements OnInit {
     window.open(item.link, '_blank');
   }
 
-  paginateRight(): void {
+  paginateToNext(): void {
     let params = {
       feed: this.currentFeed,
       page: this.pageToken,
@@ -57,7 +62,11 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/feed'], {queryParams: params});
   }
 
-  paginateLeft(): void {
+  navigateToPrevious(): void {
+    if(!this.hasToken) {
+      return;
+    }
+
     let params = {
       feed: this.currentFeed,
       page: this.pageToken,
@@ -65,13 +74,4 @@ export class FeedComponent implements OnInit {
     };
     this.router.navigate(['/feed'], {queryParams: params});
   }
-
-  /*onPageEvent(pageEvent: PageEvent): void {
-    let params = {
-      feed: this.currentFeed,
-      page: pageEvent.pageIndex,
-      pageSize: pageEvent.pageSize
-    };
-    this.router.navigate(['/feed'], {queryParams: params});
-  }*/
 }

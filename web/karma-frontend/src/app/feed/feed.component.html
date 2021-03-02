@@ -1,10 +1,10 @@
-<div>
+<div class="feed-container-internal">
 
-  <div [hidden]="!inProgress">
+  <div *ngIf="inProgress" class="feed-loading-container">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
 
-  <div>
+  <div style="width: 100%">
     <mat-card *ngFor="let item of feed" class="feed-item-box">
       <div class="flex-row">
         <img class="feed-item-icon" src="{{item.site}}/favicon.ico">
@@ -34,7 +34,8 @@
               mat-icon-button
               aria-label="Previous page"
               matTooltip="Previous page"
-              (click)="paginateLeft()">
+              (click)="navigateToPrevious()"
+              [disabled]="!hasToken">
         <mat-icon>keyboard_arrow_left</mat-icon>
       </button>
 
@@ -42,10 +43,9 @@
               mat-icon-button
               aria-label="Next page"
               matTooltip="Next page"
-              (click)="paginateRight()">
+              (click)="paginateToNext()">
         <mat-icon>keyboard_arrow_right</mat-icon>
       </button>
     </div>
   </div>
-
 </div>
