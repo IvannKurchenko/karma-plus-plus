@@ -6,13 +6,11 @@ import io.circe.generic.semiauto._
 
 import java.net.URI
 
-case class RedditAutocompleteItem(numSubscribers: Int,
-                                  name: String,
-                                  id: String) {
+case class RedditAutocompleteItem(numSubscribers: Int, name: String, id: String) {
   def toKarmaSuggest: KarmaSuggestItem = {
     KarmaSuggestItem(
       name = name,
-      description = s"subreddit with $numSubscribers subscribers",
+      description = s"Subreddit with $numSubscribers subscribers",
       source = KarmaFeedItemSources.Reddit,
       site = RedditAutocompleteItem.redditSite,
       subSource = ""
@@ -23,7 +21,8 @@ case class RedditAutocompleteItem(numSubscribers: Int,
 object RedditAutocompleteItem {
   implicit val codec: Codec[RedditAutocompleteItem] = deriveCodec
 
-  val redditSite: URI = URI.create("https://reddit.com")
+  val reddit = "https://reddit.com"
+  val redditSite: URI = URI.create(reddit)
 }
 
 case class RedditAutocomplete(subreddits: List[RedditAutocompleteItem])

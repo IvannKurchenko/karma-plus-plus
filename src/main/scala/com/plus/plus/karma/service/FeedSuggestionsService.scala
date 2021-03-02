@@ -29,7 +29,6 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
 
   private val stackExchangeFileCache = File("data/stack-exchange-tags.json")
 
-
   def autocompleteSuggestions(termPrefix: String): F[KarmaSuggest] = {
     val normalizedPrefix = normalize(termPrefix)
     if (normalizedPrefix.nonEmpty) {
@@ -37,6 +36,7 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
         reddit <- autocompleteRedditSuggestions(normalizedPrefix)
         github <- autocompleteGithubSuggestions(normalizedPrefix)
         stackExchange <- autocompleteStackExchangeSuggestions(normalizedPrefix)
+        //TODO - random merge
       } yield KarmaSuggest(github ++ reddit ++ stackExchange)
     } else {
       KarmaSuggest.empty.pure
@@ -63,16 +63,12 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
   }
 
   private def autocompleteGithubSuggestions(term: String): F[List[KarmaSuggestItem]] = {
-    githubAllSuggestions.map { languages =>
-      languages.items.filter(language => normalize(language.name).startsWith(term))
-    }
+    githubAllSuggestions.map(_.items.filter(language => normalize(language.name).startsWith(term)))
   }
 
   private def exactGithubSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
     val names = items.map(_.name).map(normalize).toSet
-    githubAllSuggestions.map { languages =>
-      languages.items.filter(language => names.contains(normalize(language.name)))
-    }
+    githubAllSuggestions.map(_.items.filter(language => names.contains(normalize(language.name))))
   }
 
   private def autocompleteStackExchangeSuggestions(term: String): F[List[KarmaSuggestItem]] = {
@@ -81,9 +77,7 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
 
   private def exactStackExchangeSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
     val names = items.map(_.name).toSet
-    stackExchangeTags.map { tags =>
-      tags.items.filter(tag => names.contains(tag.name))
-    }
+    stackExchangeTags.map(_.items.filter(tag => names.contains(tag.name)))
   }
 
   /*
@@ -115,10 +109,12 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
 
   private def loadAllStackExchangeTagsFromFileCache: F[List[SiteStackExchangeTag]] = {
     for {
+      _ <- Logger[F].info("Start fetching all stack exchange tags from local file cache")
       lines <- Sync[F].delay(stackExchangeFileCache.lines)
       parsedLines <- lines.toList.traverse { line =>
         parser.parse(line).flatMap(_.as[SiteStackExchangeTag]).liftTo[F]
       }
+      _ <- Logger[F].info("Finished fetching all stack exchange tags from local file cache")
     } yield parsedLines
   }
 

@@ -18,7 +18,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
 
   private implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
-  private val pageSize = 10
+  private val pageSize = 5
   private val empty = List.empty[KarmaFeedItem].pure
 
   def feed(request: KarmaFeedRequest): F[KarmaFeed] = {
@@ -51,6 +51,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
     languages.map(feed).getOrElse(empty)
   }
 
+  //TODO: REFACTOR THIS!
   private def redditFeed(request: KarmaFeedRequest): F[(KarmaRedditPageToken, List[KarmaFeedItem])] = {
     val items = request.source(KarmaFeedItemSources.Reddit)
     if(items.nonEmpty) {

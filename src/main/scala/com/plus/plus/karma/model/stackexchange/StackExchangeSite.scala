@@ -7,10 +7,7 @@ import io.circe.generic.semiauto._
 
 import com.plus.plus.karma.utils.json._
 
-case class StackExchangeSite(audience: String,
-                             site_url: URI,
-                             api_site_parameter: String,
-                             name: String)
+case class StackExchangeSite(audience: String, site_url: URI, api_site_parameter: String, name: String)
 
 object StackExchangeSite {
   implicit val codec: Codec[StackExchangeSite] = deriveCodec

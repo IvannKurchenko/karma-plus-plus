@@ -17,7 +17,7 @@ case class StackExchangeQuestion(tags: List[String],
   def asKarmaFeedItem: KarmaFeedItem = {
     KarmaFeedItem(
       name = title,
-      description = None,
+      description = Some(s"Score: $score. Tags: [${tags.mkString(", ")}]"),
       link = link,
       site = URI.create(s"https://${link.getHost}"),
       parentLink = None,

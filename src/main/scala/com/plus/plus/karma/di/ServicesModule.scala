@@ -1,6 +1,6 @@
 package com.plus.plus.karma.di
 
-import cats.effect.{Async, Concurrent, ContextShift, Timer}
+import cats.effect.{Concurrent, ContextShift, Timer}
 import com.plus.plus.karma.ApplicationConfig
 import com.plus.plus.karma.service._
 import com.softwaremill.macwire.wire
