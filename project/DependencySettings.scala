@@ -53,7 +53,9 @@ object DependencySettings {
       "com.softwaremill.macwire" %% "util" % macwireVersion,
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
 
-      "com.github.pathikrit" %% "better-files" % betterFilesVersion
+      "com.github.pathikrit" %% "better-files" % betterFilesVersion,
+
+      "org.scalatest" %% "scalatest" % "3.2.5" % "test"
     )
   }
 }

@@ -3,6 +3,7 @@ package com.plus.plus.karma.service
 import cats.Applicative
 import cats.syntax.all._
 import cats.effect._
+import com.plus.plus.karma.utils.collection._
 import com.plus.plus.karma.model.{KarmaFeedRequest, _}
 import com.plus.plus.karma.model.stackexchange._
 import com.plus.plus.karma.service.FeedSuggestionsService._
@@ -14,7 +15,6 @@ import scalacache.{Cache, Mode}
 import scalacache.caffeine.CaffeineCache
 import better.files._
 
-import scala.concurrent.duration._
 import fs2.Stream
 
 class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
@@ -36,8 +36,7 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
         reddit <- autocompleteRedditSuggestions(normalizedPrefix)
         github <- autocompleteGithubSuggestions(normalizedPrefix)
         stackExchange <- autocompleteStackExchangeSuggestions(normalizedPrefix)
-        //TODO - random merge
-      } yield KarmaSuggest(github ++ reddit ++ stackExchange)
+      } yield KarmaSuggest(List(github, reddit, stackExchange).merge)
     } else {
       KarmaSuggest.empty.pure
     }
