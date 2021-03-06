@@ -22,8 +22,9 @@ class FrontendRoutes[F[_] : Async : ContextShift](httpClientModule: HttpClientMo
   val routes = HttpRoutes.of[F] {
     case request@GET -> Root => index(request)
 
-    case request@GET -> Root / path if staticFiles.exists(path.endsWith) =>
-      static(request.uri.path, request).getOrElseF(NotFound(s"Not found static file at: $path"))
+    case request@GET -> _ if staticFiles.exists(request.uri.path.endsWith) =>
+      val path = request.uri.path
+      static(path, request).getOrElseF(NotFound(s"Not found static file at: $path"))
 
     /*
      * If no path were matched then reply with Angular index page, so route will be resolved inside Angular.

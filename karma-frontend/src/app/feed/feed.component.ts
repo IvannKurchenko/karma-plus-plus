@@ -56,7 +56,7 @@ export class FeedComponent implements OnInit {
   paginateToNext(): void {
     let params = {
       feed: this.currentFeed,
-      page: this.pageToken,
+      token: this.pageToken,
       forward: true
     };
     this.router.navigate(['/feed'], {queryParams: params});
@@ -69,7 +69,7 @@ export class FeedComponent implements OnInit {
 
     let params = {
       feed: this.currentFeed,
-      page: this.pageToken,
+      token: this.pageToken,
       forward: false
     };
     this.router.navigate(['/feed'], {queryParams: params});
