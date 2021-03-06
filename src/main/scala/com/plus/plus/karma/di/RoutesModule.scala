@@ -7,9 +7,12 @@ import com.softwaremill.macwire.wire
 import org.http4s.dsl.Http4sDsl
 
 class RoutesModule[F[_]: ContextShift: Timer: Async: Http4sDsl](config: ApplicationConfig,
-                                                                servicesModule: ServicesModule[F]) {
+                                                                servicesModule: ServicesModule[F],
+                                                                httpClientModule: HttpClientModule[F]) {
   import servicesModule._
+  import httpClientModule._
 
   val feedRoutes = wire[FeedApiRoutes[F]]
   val buildRoutes = wire[BuildRoutes[F]]
+  val frontend = wire[FrontendRoutes[F]]
 }

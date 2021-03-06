@@ -1,4 +1,3 @@
-import sbt._
 import sbt.Keys._
 import sbtbuildinfo.BuildInfoOption
 import sbtbuildinfo.BuildInfoPlugin.autoImport._

@@ -61,6 +61,9 @@ project/plugins/project/
 .lib/
 .bsp
 
+.vscode
+.metals
+
 ### Scala ###
 
 ### vscode ###
