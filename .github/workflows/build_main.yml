@@ -4,7 +4,7 @@
 name: Karma++ merge request build
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
 
 jobs:
