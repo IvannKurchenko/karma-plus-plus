@@ -12,7 +12,6 @@ object DependencySettings {
     val refinedVersion = "0.9.20"
     val scalaCacheVersion = "0.28.0"
     val catsRetryVersion = "2.1.0"
-    val betterFilesVersion = "3.9.1"
     val fs2Version = "2.5.0"
 
     libraryDependencies ++= Seq(
@@ -52,8 +51,6 @@ object DependencySettings {
       "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % "provided",
       "com.softwaremill.macwire" %% "util" % macwireVersion,
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
-
-      "com.github.pathikrit" %% "better-files" % betterFilesVersion,
 
       "org.scalatest" %% "scalatest" % "3.2.5" % "test"
     )

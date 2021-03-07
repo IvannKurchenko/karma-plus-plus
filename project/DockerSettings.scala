@@ -8,7 +8,8 @@ import com.typesafe.sbt.packager.docker.Cmd
 object DockerSettings {
 
   lazy val settings = Seq(
-    dockerRepository := Some("ikurchenko/karmaplusplus"),
+    dockerRepository := Some("ikurchenko"),
+    packageName in Docker := "karmaplusplus",
 
     mappings in Docker ++= {
       directory(baseDirectory.value / "karma-frontend" / "dist" / "karma-frontend").map {
