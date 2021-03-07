@@ -17,7 +17,9 @@ object DockerSettings {
       }
     },
 
-    dockerCommands += Cmd("ENV", "fronted-path /opt/docker/karma-frontend"),
+    dockerCommands += Cmd("ENV", "FRONTEND_PATH /opt/docker/karma-frontend"),
+    dockerCommands += Cmd("ENV", "APPLICATION_PORT 80"),
+    dockerCommands += Cmd("ENV", "APPLICATION_HOST 0.0.0.0"),
 
     dockerExposedPorts := Seq(8080, 8080),
     dockerUpdateLatest := true
