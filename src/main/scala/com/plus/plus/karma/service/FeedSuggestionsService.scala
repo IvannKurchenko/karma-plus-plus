@@ -7,13 +7,10 @@ import com.plus.plus.karma.utils.collection._
 import com.plus.plus.karma.model.{KarmaFeedRequest, _}
 import com.plus.plus.karma.model.stackexchange._
 import com.plus.plus.karma.service.FeedSuggestionsService._
-import io.circe.syntax._
-import io.circe._
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import scalacache.{Cache, Mode}
 import scalacache.caffeine.CaffeineCache
-import better.files._
 
 import fs2.Stream
 
@@ -26,8 +23,6 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
 
   private implicit val languageIndexCache: Cache[GithubKarmaSuggestItems] = CaffeineCache[GithubKarmaSuggestItems]
   private implicit val stackExchangeTagsCache: Cache[StackExchangeItems] = CaffeineCache[StackExchangeItems]
-
-  private val stackExchangeFileCache = File("data/stack-exchange-tags.json")
 
   def autocompleteSuggestions(termPrefix: String): F[KarmaSuggest] = {
     val normalizedPrefix = normalize(termPrefix)
@@ -97,16 +92,17 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
   }
 
   private def stackExchangeTags: F[StackExchangeItems] = {
-    scalacache.memoization.memoizeF(None) {
+    /*scalacache.memoization.memoizeF(None) {
       for {
         exists <- Sync[F].delay(stackExchangeFileCache.exists)
         _ <- if(!exists) fetchAllStackExchangeTagsToFileCache else Sync[F].unit
         tags <- loadAllStackExchangeTagsFromFileCache
       } yield StackExchangeItems(tags.sortBy(_.tag.count).map(_.asKarmaItem))
-    }
+    }*/
+    StackExchangeItems(Nil).pure
   }
 
-  private def loadAllStackExchangeTagsFromFileCache: F[List[SiteStackExchangeTag]] = {
+  /*private def loadAllStackExchangeTagsFromFileCache: F[List[SiteStackExchangeTag]] = {
     for {
       _ <- Logger[F].info("Start fetching all stack exchange tags from local file cache")
       lines <- Sync[F].delay(stackExchangeFileCache.lines)
@@ -131,7 +127,7 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
       }
       _ <- Logger[F].info("Finished fetching all stack exchange tags")
     } yield ()
-  }
+  }*/
 
   private def fetchStackExchangeTags(site: StackExchangeSite): Stream[F, SiteStackExchangeTag] = {
     def tags(page: Int): F[StackExchangeTags] = {

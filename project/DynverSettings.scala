@@ -12,6 +12,8 @@ object DynverSettings {
      * Version will be docker image tag in this case and `+` characters is not valid characters for docker tag.
      */
     version in ThisBuild ~= (_.replace('+', '-')),
-    dynver in ThisBuild ~= (_.replace('+', '-'))
+    dynver in ThisBuild ~= (_.replace('+', '-')),
+
+    dynverSeparator in ThisBuild := "-"
   )
 }

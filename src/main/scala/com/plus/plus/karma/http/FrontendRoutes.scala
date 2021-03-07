@@ -1,6 +1,7 @@
 package com.plus.plus.karma.http
 
-import cats.effect.{Async, Blocker, ContextShift}
+import cats.data.OptionT
+import cats.effect.{Async, Blocker, ContextShift, Sync}
 import com.plus.plus.karma.di.HttpClientModule
 import org.http4s.{HttpRoutes, Request, StaticFile}
 import org.http4s.dsl.Http4sDsl
@@ -16,7 +17,11 @@ class FrontendRoutes[F[_] : Async : ContextShift](httpClientModule: HttpClientMo
   import dsl._
   import httpClientModule._
 
-  private val staticFileBasePath = "karma-frontend/dist/karma-frontend"
+  /*
+   * See `DockerSettings.dockerEnvVars` for details.
+   */
+  private val frontendEnvVarKey = "fronted-path"
+  private val frontendLocalPath = "karma-frontend/dist/karma-frontend"
   private val staticFiles = Set(".js", ".css", ".map", ".html", ".webm", ".png")
 
   val routes = HttpRoutes.of[F] {
@@ -38,6 +43,12 @@ class FrontendRoutes[F[_] : Async : ContextShift](httpClientModule: HttpClientMo
   }
 
   private def static(file: String, request: Request[F]) = {
-    StaticFile.fromFile(new File(staticFileBasePath, file), blocker, Some(request))
+    /*
+     * Frontend location inside Docker container differs from local.
+     */
+    val frontendPath = Sync[F].delay(sys.env.getOrElse(frontendEnvVarKey, frontendLocalPath))
+    OptionT.liftF(frontendPath).flatMap { staticFileBasePath =>
+      StaticFile.fromFile(new File(staticFileBasePath, file), blocker, Some(request))
+    }
   }
 }

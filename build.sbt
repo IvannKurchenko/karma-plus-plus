@@ -5,13 +5,12 @@ lazy val root = (project in file("."))
   .settings(BuildInfoSettings.settings)
   .settings(DependencySettings.settings)
   .settings(DynverSettings.settings)
+  .settings(DockerSettings.settings)
   .settings(
     name := "karma-plus-plus",
     scalacOptions := Seq("-Xlint", "-Ymacro-annotations"),
     scalaVersion := "2.13.4",
-    dynverSeparator in ThisBuild := "-",
-    mainClass := Some("com.plus.plus.karma.KarmaApp"),
-    dockerUpdateLatest := true
+    mainClass := Some("com.plus.plus.karma.KarmaApp")
 
     /*
     FIXME: error: not found: value versionReconciliation
