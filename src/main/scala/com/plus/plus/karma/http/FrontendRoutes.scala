@@ -20,7 +20,7 @@ class FrontendRoutes[F[_] : Async : ContextShift](httpClientModule: HttpClientMo
   /*
    * See `DockerSettings.dockerEnvVars` for details.
    */
-  private val frontendEnvVarKey = "fronted-path"
+  private val frontendEnvVarKey = "FRONTEND_PATH"
   private val frontendLocalPath = "karma-frontend/dist/karma-frontend"
   private val staticFiles = Set(".js", ".css", ".map", ".html", ".webm", ".png")
 
