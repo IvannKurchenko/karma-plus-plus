@@ -1,9 +1,10 @@
-name: Karma++ CI
+#
+# CI Workflow only for building Merge Requests
+#
+name: Karma++ merge request build
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
