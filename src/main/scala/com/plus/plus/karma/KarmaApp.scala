@@ -28,10 +28,7 @@ object KarmaApp extends IOApp {
        */
       exitCode <- Limiter.start[IO](15 every 1.second).use { stackExchangeLimiter =>
         val module = applicationModule(config, stackExchangeLimiter)
-        for {
-          _ <- module.servicesModule.feedSuggestionsService.prefetchSuggestionData
-          exitCode <- startServer(config, module)
-        } yield exitCode
+        startServer(config, module)
       }
     } yield exitCode
   }

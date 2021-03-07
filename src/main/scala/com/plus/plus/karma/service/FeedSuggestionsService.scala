@@ -78,12 +78,12 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
    * It is totally not functional approach to change service internal state via memorization, but otherwise
    * it will overcomplicate all other DI
    */
-  def prefetchSuggestionData: F[Unit] = {
-    Logger[F].info("Start prefetching internal data") *>
-      githubAllSuggestions *>
-      stackExchangeTags *>
-      Logger[F].info("Finished prefetching internal data")
-  }
+//  def prefetchSuggestionData: F[Unit] = {
+//    Logger[F].info("Start prefetching internal data") *>
+//      githubAllSuggestions *>
+//      stackExchangeTags *>
+//      Logger[F].info("Finished prefetching internal data")
+//  }
 
   private def githubAllSuggestions: F[GithubKarmaSuggestItems] = {
     scalacache.memoization.memoizeF(None) {
