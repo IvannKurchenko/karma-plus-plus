@@ -21,29 +21,24 @@ Necessary software required to be installed to work with.
 - npm v14.15.5;
 <br>
 
-### How to to build frontend
+### How to build frontend
 Go to frontend directory `cd karma-frontend` and download half of internet via `npm install`
 Build Angular frontend app `npm run build`. Find build result at `karma-frontend/dist/karma-frontend`
 <br>
 
 ### How to run frontend
-`npm run build`  and open in a browser `http://localhost:4200/`
-<br>
+Run `npm run build` and open in a browser `http://localhost:4200/` <br>
 
 ### How to compile application
-In order to compile application run `sbt clean compile`
-<br>
-
+In order to compile application run `sbt clean compile`<br>
 
 ### How to run application
-Run `sbt run` and open in a browser `http://localhost:8080`
-<br>
+Run `sbt run` and open in a browser `http://localhost:8080`<br>
 
 ### How to build Docker container
 Make sure you built Angular frontend first and then run `sbt docker:publishLocal`
 Find built image: `ikurchenko/karmaplusplus:latest`
-Which you can run with `docker run -p 8080:8080 ikurchenko/karmaplusplus`
-
+Which you can run with `docker run -p 8080:80 ikurchenko/karmaplusplus`
 
 ### Contribution
 Any contribution to the project more than welcome: issues reports, feature suggestions etc.
