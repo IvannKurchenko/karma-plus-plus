@@ -2,11 +2,14 @@ package com.plus.plus.karma
 
 import cats.effect._
 import com.plus.plus.karma.di.ApplicationModule
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import org.http4s.server.Router
+
 import scalacache.Mode
 import upperbound.Limiter
 import upperbound.syntax.rate._
@@ -15,9 +18,12 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
 object KarmaApp extends IOApp {
+  private implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
+
   override def run(args: List[String]): IO[ExitCode] = {
     for {
       config <- ApplicationConfig.load
+      _ <- Logger[IO].info(s"Application configuration: $config")
 
       /*
        * Start rate limiter mainly intended to be used for StackExchange usage.
@@ -47,7 +53,8 @@ object KarmaApp extends IOApp {
     val api = module.routes.feedRoutes.routes
     val build = module.routes.buildRoutes.routes
     val frontend = module.routes.frontend.routes
-    Router("/api" -> api, "/build" -> build, "/" -> frontend).orNotFound
+    val health = module.routes.healthRoutes.routes
+    Router("/api" -> api, "/build" -> build, "/health" -> health, "/" -> frontend).orNotFound
   }
 
   private def applicationModule(config: ApplicationConfig,
