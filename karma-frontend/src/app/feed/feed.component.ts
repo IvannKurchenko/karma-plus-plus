@@ -43,10 +43,15 @@ export class FeedComponent implements OnInit {
     });
   }
 
-  private onFeedRetrieved(feed: Feed) {
+  private onFeedRetrieved(feed: Feed): void {
+    let opened = window.localStorage.getItem('opened');
+    let openedTimestamp = opened != null ? parseInt(opened) : 0;
+
     this.inProgress = false;
     this.pageToken = feed.pageToken;
-    this.feed = feed.items.map(item => new RenderedFeedItemModel(item));
+    this.feed = feed.items.map(item => new RenderedFeedItemModel(item, openedTimestamp));
+
+    window.localStorage.setItem('opened', Date.now().toString());
   }
 
   openItem(item: RenderedFeedItemModel) {

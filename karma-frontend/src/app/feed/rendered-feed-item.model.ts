@@ -11,11 +11,12 @@ export class RenderedFeedItemModel {
   public site: string;
   public parentLink?: string;
   public created: string;
+  public seen: boolean;
 
   public showShortDescription: boolean;
   public longDescription: boolean;
 
-  constructor(item: FeedItem) {
+  constructor(item: FeedItem, lastOpenTimestamp: number) {
     this.name = item.name;
     this.description = item.description ? item.description : "";
     this.source = item.source;
@@ -23,6 +24,7 @@ export class RenderedFeedItemModel {
     this.site = item.site;
     this.parentLink = item.parentLink;
     this.created = moment.unix(item.created).format("DD-MM-YYYY HH:mm:ss");
+    this.seen = (item.created * 1000) > lastOpenTimestamp;
 
     this.showShortDescription = true;
     this.longDescription = this.description.length > RenderedFeedItemModel.maxLength;

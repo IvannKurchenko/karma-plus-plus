@@ -7,7 +7,10 @@
   <div style="width: 100%">
     <mat-card *ngFor="let item of feed" class="feed-item-box">
       <div class="flex-row">
-        <img class="feed-item-icon" src="{{item.site}}/favicon.ico">
+        <div class="flex-column">
+          <img class="feed-item-icon" src="{{item.site}}/favicon.ico">
+          <div class="seen-dot" [hidden]="!item.seen"></div>
+        </div>
         <mat-card-header>
           <mat-card-title class="feed-item-title" (click)="openItem(item)">{{item.name}}</mat-card-title>
           <mat-card-subtitle>
