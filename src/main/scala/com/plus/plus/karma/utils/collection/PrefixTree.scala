@@ -36,7 +36,7 @@ case class MutablePrefixTree[V](var value: Option[V], child: mutable.Map[Char, M
     } else {
       val nextChild = new MutablePrefixTree[V](None, mutable.Map.empty)
       val headChild = child.getOrElse(prefix.head, nextChild)
-      headChild.append(prefix.tail, value)
+      headChild.append(prefix.tail -> value)
       child += (prefix.head -> headChild)
     }
     this

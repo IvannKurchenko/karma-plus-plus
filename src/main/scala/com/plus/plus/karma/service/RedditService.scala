@@ -1,21 +1,20 @@
 package com.plus.plus.karma.service
 
-import cats.MonadError
 import cats.effect._
 import cats.syntax.all._
 import com.plus.plus.karma.model.reddit._
 import com.plus.plus.karma.service.RedditService.SubredditPagination
 import io.circe.Decoder
-import org.http4s.headers._
-import org.http4s.circe.jsonOf
-import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.Method._
 import org.http4s.Uri
+import org.http4s.circe.jsonOf
 import org.http4s.client.Client
+import org.http4s.client.dsl.Http4sClientDsl
+import org.http4s.headers._
 import scalacache.Mode
 
 class RedditService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: ContextShift]
-                   (httpClient: Client[F])(implicit ME: MonadError[F, Throwable]) {
+                   (httpClient: Client[F]) {
 
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._

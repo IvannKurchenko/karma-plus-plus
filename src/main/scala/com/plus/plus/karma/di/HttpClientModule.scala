@@ -2,9 +2,7 @@ package com.plus.plus.karma.di
 
 import cats.effect.{Async, Blocker, ContextShift, Timer}
 import com.plus.plus.karma.ApplicationConfig
-import com.plus.plus.karma.service.HttpService
 import org.http4s.client.{Client, JavaNetClientBuilder}
-import com.softwaremill.macwire.wire
 
 import java.net.{InetSocketAddress, Proxy}
 import java.util.concurrent._

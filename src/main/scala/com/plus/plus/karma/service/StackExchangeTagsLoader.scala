@@ -22,7 +22,7 @@ import io.chrisdavenport.log4cats.Logger
  * Loads stack exchange tags from resources
  */
 class StackExchangeTagsLoader[F[_]: Sync] {
-  private implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
+  private implicit def unsafeLogger = Slf4jLogger.getLogger[F]
 
   def load: F[PrefixTree[KarmaSuggestItem]] = {
     for {

@@ -1,10 +1,10 @@
 package com.plus.plus.karma.http
 
 import cats.data.OptionT
-import cats.effect.{Async, Blocker, ContextShift, Sync}
+import cats.effect.{Async, ContextShift, Sync}
 import com.plus.plus.karma.di.HttpClientModule
-import org.http4s.{HttpRoutes, Request, StaticFile}
 import org.http4s.dsl.Http4sDsl
+import org.http4s.{HttpRoutes, Request, StaticFile}
 
 import java.io.File
 

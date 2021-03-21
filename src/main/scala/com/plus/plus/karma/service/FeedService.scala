@@ -13,10 +13,9 @@ import scala.language.postfixOps
 
 class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubService[F],
                                                       redditService: RedditService[F],
-                                                      stackExchangeService: StackExchangeService[F])
-                                                     (implicit A: Applicative[F]) {
+                                                      stackExchangeService: StackExchangeService[F]) {
 
-  private implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
+  private implicit def unsafeLogger = Slf4jLogger.getLogger[F]
 
   private val pageSize = 5
   private val empty = List.empty[KarmaFeedItem].pure
@@ -70,7 +69,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
         redditService.subredditsPosts(subRedditName, pageSize, subredditPageToken).map { listing =>
           val before = listing.data.children.headOption.map(_.data.name)
           val after = listing.data.children.lastOption.map(_.data.name)
-          (subRedditName -> (before, after), listing.data.children.map(_.data.asKarmaFeedItem))
+          (subRedditName -> (before -> after), listing.data.children.map(_.data.asKarmaFeedItem))
         }
       }.map { result =>
         val items = result.flatMap {

@@ -35,7 +35,7 @@ object KarmaRedditPageToken {
       val before = subredditBeforeAfter(0)
       val after = subredditBeforeAfter(1)
 
-      subreddit -> (before, after)
+      subreddit -> (before -> after)
     }.toMap
     KarmaRedditPageToken(tokens)
   }

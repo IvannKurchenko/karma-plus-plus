@@ -18,7 +18,7 @@ import upperbound.Limiter
 import java.net.InetAddress
 
 class StackExchangeService[F[_]: Http4sClientDsl: Mode: Sync: Timer: Concurrent: ContextShift]
-                          (httpClient: Client[F], limiter: Limiter[F])(implicit ME: MonadError[F, Throwable]) {
+                          (httpClient: Client[F], limiter: Limiter[F]) {
 
   private val dsl = implicitly[Http4sClientDsl[F]]
   import dsl._

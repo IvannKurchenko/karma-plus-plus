@@ -1,25 +1,19 @@
 package com.plus.plus.karma.service
 
-import cats.Applicative
-import cats.syntax.all._
 import cats.effect._
-import com.plus.plus.karma.utils.collection._
+import cats.syntax.all._
 import com.plus.plus.karma.model.{KarmaFeedRequest, _}
-import com.plus.plus.karma.model.stackexchange._
 import com.plus.plus.karma.service.FeedSuggestionsService._
-import io.chrisdavenport.log4cats.Logger
+import com.plus.plus.karma.utils.collection._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import scalacache.{Cache, Mode}
 import scalacache.caffeine.CaffeineCache
-
-import fs2.Stream
+import scalacache.{Cache, Mode}
 
 class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
                                                                         redditService: RedditService[F],
-                                                                        stackExchangeTags: PrefixTree[KarmaSuggestItem])
-                                                                       (implicit A: Applicative[F]) {
+                                                                        stackExchangeTags: PrefixTree[KarmaSuggestItem]) {
 
-  private implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
+  private implicit def unsafeLogger = Slf4jLogger.getLogger[F]
 
   private implicit val languageIndexCache: Cache[GithubKarmaSuggestItems] = CaffeineCache[GithubKarmaSuggestItems]
   private implicit val stackExchangeTagsCache: Cache[StackExchangeItems] = CaffeineCache[StackExchangeItems]
