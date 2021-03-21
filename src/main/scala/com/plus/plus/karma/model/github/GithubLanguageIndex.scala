@@ -9,7 +9,7 @@ case class GithubLanguageIndex(index: Map[String, GithubLanguage]) {
   def asKarmaItems: List[KarmaSuggestItem] = {
     index.toList.map { case (name, language) =>
       val `type` = language.`type`.capitalFirst
-      val description = s"${`type`} language in GitHub. Search for open issues with `help_wanted` tag"
+      val description = s"${`type`} language in GitHub. Search for open issues with `help wanted` and `good first issues` labels"
       KarmaSuggestItem(
         name = name,
         description = description,

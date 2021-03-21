@@ -24,7 +24,7 @@ class GithubService[F[_]: Sync: Timer: Concurrent: ContextShift](httpClient: Cli
    */
   def searchIssues(languages: NonEmptyList[String], page: Int, perPage: Int): F[GithubSearch] = {
     val languageQuery = languages.map(language => s"language:$language").toList.mkString(" ")
-    val query = s"""state:open $languageQuery label:"help wanted""""
+    val query = s"""state:open $languageQuery label:"help wanted" label:"good first issues""""
     val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString)
     val url = s"https://api.github.com/search/issues?q=$encodedQuery&sort=created&page=$page&per_page=$perPage"
     for {
