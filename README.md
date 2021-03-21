@@ -1,7 +1,8 @@
 # Karma++
 ![build](https://github.com/IvannKurchenko/karma-plus-plus/actions/workflows/build_main.yml/badge.svg)
+![](demo.gif)
 
-https://karmaplusplus.com - Contribute to community and invoke `karma++;`
+http://karmaplusplus.com - Contribute to community and invoke `karma++;`
 Simple web application aggregator of Github `help-wanted` issues, stack exchange questions and reddit posts based on your preferences.
 Create contribution feed via suggestions like:
 TODO insert gif.
