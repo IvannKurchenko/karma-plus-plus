@@ -1,5 +1,5 @@
 import {Params} from "@angular/router";
-import {FeedRequest} from "../feed/feed-api.model";
+import {FeedItemRequest, FeedRequest} from "../feed/feed-api.model";
 import {SuggestItemApiModel} from "../suggest/suggest-api.model";
 
 export class QueryParametersModel {
@@ -10,19 +10,21 @@ export class QueryParametersModel {
     return params[QueryParametersModel.token] != null && params[QueryParametersModel.token] != undefined;
   }
 
+  static parseFeedItem(item: String): FeedItemRequest {
+    let feedParts: string[] = item.split(';');
+    return {
+      name: feedParts[0],
+      source: feedParts[1],
+      subSource: feedParts[2],
+    };
+  }
+
   static parseFeedRequest(params: Params): FeedRequest {
     let token: string = params['token'];
     let forward: boolean = params['forward'] == "true";
-    let feed: string[] = params['feed'];
-
-    let items = feed.map(function (item) {
-      let feedParts: string[] = item.split(';');
-      return {
-        name: feedParts[0],
-        source: feedParts[1],
-        subSource: feedParts[2],
-      };
-    });
+    let feedParameter = params['feed'];
+    let feed = (typeof(feedParameter) === 'string') ? [feedParameter] : feedParameter;
+    let items = feed.map(QueryParametersModel.parseFeedItem);
 
     if (token != null && token != "") {
       return {

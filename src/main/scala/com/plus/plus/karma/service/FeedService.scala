@@ -63,7 +63,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
         } yield {
           val (before, after) = subRedditToken
           val forward = pageToken.forward
-          val token = if(forward) before else after
+          val token = if(forward) after else before
           SubredditPagination(token, forward)
         }
 
