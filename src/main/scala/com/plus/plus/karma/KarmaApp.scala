@@ -2,6 +2,9 @@ package com.plus.plus.karma
 
 import cats.effect._
 import com.plus.plus.karma.di.ApplicationModule
+import com.plus.plus.karma.model.KarmaSuggestItem
+import com.plus.plus.karma.service.StackExchangeTagsLoader
+import com.plus.plus.karma.utils.collection.PrefixTree
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.dsl.Http4sClientDsl
@@ -9,7 +12,6 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.blaze._
 import org.http4s.server.Router
-
 import scalacache.Mode
 import upperbound.Limiter
 import upperbound.syntax.rate._
@@ -21,8 +23,12 @@ object KarmaApp extends IOApp {
   private implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
 
   override def run(args: List[String]): IO[ExitCode] = {
+    val applicationConfigLoader = new ApplicationConfigLoader[IO]
+    val stackExchangeTagsLoader = new StackExchangeTagsLoader[IO]
     for {
-      config <- ApplicationConfig.load
+      config <- applicationConfigLoader.load
+      stackExchangeTags <- stackExchangeTagsLoader.load
+
       _ <- Logger[IO].info(s"Application configuration: $config")
 
       /*
@@ -33,7 +39,7 @@ object KarmaApp extends IOApp {
        * for 24 hours in case of throttle violation.
        */
       exitCode <- Limiter.start[IO](15 every 1.second).use { stackExchangeLimiter =>
-        val module = applicationModule(config, stackExchangeLimiter)
+        val module = applicationModule(config, stackExchangeTags, stackExchangeLimiter)
         startServer(config, module)
       }
     } yield exitCode
@@ -58,12 +64,13 @@ object KarmaApp extends IOApp {
   }
 
   private def applicationModule(config: ApplicationConfig,
+                                stackExchangeTags: PrefixTree[KarmaSuggestItem],
                                 stackExchangeLimiter: Limiter[IO]): ApplicationModule[IO] = {
 
     implicit val http4sDsl: Http4sDsl[IO] = org.http4s.dsl.io
     implicit val http4sClientDsl: Http4sClientDsl[IO] = org.http4s.client.dsl.io
     implicit val mode: Mode[IO] = scalacache.CatsEffect.modes.async
 
-    new ApplicationModule[IO](config, stackExchangeLimiter)
+    new ApplicationModule[IO](config, stackExchangeTags, stackExchangeLimiter)
   }
 }

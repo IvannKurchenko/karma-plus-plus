@@ -1,0 +1,94 @@
+{
+  "index": [
+    {
+      "file": "ask_ubuntu.csv",
+      "site": "https://askubuntu.com",
+      "name": "Ask Ubuntu",
+      "api": "askubuntu"
+    },
+    {
+      "file": "electrical_engineering.csv",
+      "site": "https://electronics.stackexchange.com/",
+      "name": "Electrical Engineering",
+      "api": "electronics"
+    },
+    {
+      "file": "gis.csv",
+      "site": "https://gis.stackexchange.com/",
+      "name": "GIS",
+      "api": "gis"
+    },
+    {
+      "file": "mathematics.csv",
+      "site": "https://math.stackexchange.com/",
+      "name": "Mathematics",
+      "api": "math"
+    },
+    {
+      "file": "math_overflow.csv",
+      "site": "https://mathoverflow.net/",
+      "name": "Math Overflow",
+      "api": "mathoverflow.net"
+    },
+    {
+      "file": "stack_overflow_em_português.csv",
+      "site": "https://pt.stackoverflow.com",
+      "name": "Stack Overflow em Português",
+      "api": "pt.stackoverflow"
+    },
+    {
+      "file": "stack_overflow_en_español.csv",
+      "site": "https://es.stackoverflow.com",
+      "name": "Stack Overflow en Español",
+      "api": "es.stackoverflow"
+    },
+    {
+      "file": "stack_overflow_russian.csv",
+      "site": "https://es.stackoverflow.com",
+      "name": "Stack Overflow на Русском",
+      "api": "ru.stackoverflow"
+    },
+    {
+      "file": "super_user.csv",
+      "site": "https://superuser.com",
+      "name": "Stack Overflow на Русском",
+      "api": "Super User"
+    },
+    {
+      "file": "tex_latex.csv",
+      "site": "https://tex.stackexchange.com",
+      "name": "TeX - LaTeX",
+      "api": "tex"
+    },
+    {
+      "file": "cross_validated.csv",
+      "site": "https://stats.stackexchange.com",
+      "name": "Cross Validated",
+      "api": "stats"
+    },
+    {
+      "file": "physics.csv",
+      "site": "https://physics.stackexchange.com",
+      "name": "Physics",
+      "api": "physics"
+    },
+    {
+      "file": "server_fault.csv",
+      "site": "https://serverfault.com",
+      "name": "Server Fault",
+      "api": "serverfault"
+    },
+    {
+      "file": "stackoverflow.csv",
+      "site": "https://stackoverflow.com",
+      "name": "StackOverflow",
+      "api": "stackoverflow"
+    },
+    {
+      "file": "unix_and_linux.csv",
+      "site": "https://unix.stackexchange.com",
+      "name": "Unix &amp; Linux",
+      "api": "unix"
+    }
+  ]
+}

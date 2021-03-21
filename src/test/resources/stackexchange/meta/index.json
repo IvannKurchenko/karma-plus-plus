@@ -1,0 +1,10 @@
+{
+  "index": [
+    {
+      "file": "ask_ubuntu.csv",
+      "site": "https://askubuntu.com",
+      "name": "Ask Ubuntu",
+      "api": "askubuntu"
+    }
+  ]
+}

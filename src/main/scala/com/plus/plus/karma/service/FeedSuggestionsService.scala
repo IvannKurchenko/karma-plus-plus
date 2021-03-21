@@ -16,7 +16,7 @@ import fs2.Stream
 
 class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubService: GithubService[F],
                                                                         redditService: RedditService[F],
-                                                                        stackExchangeService: StackExchangeService[F])
+                                                                        stackExchangeTags: PrefixTree[KarmaSuggestItem])
                                                                        (implicit A: Applicative[F]) {
 
   private implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
@@ -66,98 +66,17 @@ class FeedSuggestionsService[F[_] : Mode : Sync : ContextShift : Timer](githubSe
   }
 
   private def autocompleteStackExchangeSuggestions(term: String): F[List[KarmaSuggestItem]] = {
-    stackExchangeTags.map(_.items.filter(_.name.startsWith(term)))
+    stackExchangeTags.prefixSearch(term).toList.pure
   }
 
   private def exactStackExchangeSuggestions(items: List[KarmaFeedItemRequest]): F[List[KarmaSuggestItem]] = {
-    val names = items.map(_.name).toSet
-    stackExchangeTags.map(_.items.filter(tag => names.contains(tag.name)))
+    items.flatMap(item => stackExchangeTags.exactSearch(item.name)).pure
   }
-
-  /*
-   * It is totally not functional approach to change service internal state via memorization, but otherwise
-   * it will overcomplicate all other DI
-   */
-//  def prefetchSuggestionData: F[Unit] = {
-//    Logger[F].info("Start prefetching internal data") *>
-//      githubAllSuggestions *>
-//      stackExchangeTags *>
-//      Logger[F].info("Finished prefetching internal data")
-//  }
 
   private def githubAllSuggestions: F[GithubKarmaSuggestItems] = {
     scalacache.memoization.memoizeF(None) {
       githubService.languages.map(languages => GithubKarmaSuggestItems(languages.asKarmaItems))
     }
-  }
-
-  private def stackExchangeTags: F[StackExchangeItems] = {
-    /*scalacache.memoization.memoizeF(None) {
-      for {
-        exists <- Sync[F].delay(stackExchangeFileCache.exists)
-        _ <- if(!exists) fetchAllStackExchangeTagsToFileCache else Sync[F].unit
-        tags <- loadAllStackExchangeTagsFromFileCache
-      } yield StackExchangeItems(tags.sortBy(_.tag.count).map(_.asKarmaItem))
-    }*/
-    StackExchangeItems(Nil).pure
-  }
-
-  /*private def loadAllStackExchangeTagsFromFileCache: F[List[SiteStackExchangeTag]] = {
-    for {
-      _ <- Logger[F].info("Start fetching all stack exchange tags from local file cache")
-      lines <- Sync[F].delay(stackExchangeFileCache.lines)
-      parsedLines <- lines.toList.traverse { line =>
-        parser.parse(line).flatMap(_.as[SiteStackExchangeTag]).liftTo[F]
-      }
-      _ <- Logger[F].info("Finished fetching all stack exchange tags from local file cache")
-    } yield parsedLines
-  }
-
-  private def fetchAllStackExchangeTagsToFileCache: F[Unit] = {
-    for {
-      _ <- Logger[F].info("Start fetching all stack exchange tags")
-      _ <- Sync[F].delay(stackExchangeFileCache.parent.createDirectories())
-      _ <- {
-        (stackExchangeSites >>= fetchStackExchangeTags).
-          map(_.asJson.noSpaces).
-          chunkN(100).
-          evalMap(json => Sync[F].delay(stackExchangeFileCache.appendLines(json.toList:_*))).
-          compile.
-          drain
-      }
-      _ <- Logger[F].info("Finished fetching all stack exchange tags")
-    } yield ()
-  }*/
-
-  private def fetchStackExchangeTags(site: StackExchangeSite): Stream[F, SiteStackExchangeTag] = {
-    def tags(page: Int): F[StackExchangeTags] = {
-      val siteName = site.api_site_parameter
-      for {
-        _ <- Logger[F].info(s"Start fetching StackExchange tags at page: $page for site $siteName")
-        tags <- stackExchangeService.tags(page, 100, siteName)
-        _ <- Logger[F].info(s"Finished fetching StackExchange tags at page: $page")
-      } yield tags
-    }
-
-    for {
-      tags <- Stream.fromIterator(Iterator.from(1)).evalMap(tags).takeWhile(_.has_more)
-      tag <- Stream.fromIterator(tags.items.iterator)
-    } yield SiteStackExchangeTag(site, tag)
-  }
-
-  private def stackExchangeSites: Stream[F, StackExchangeSite] = {
-    def sites(page: Int): F[StackExchangeSites] = {
-      for {
-        _ <- Logger[F].info(s"Start fetching StackExchange sites at page: $page")
-        sites <- stackExchangeService.sites(page, 100)
-        _ <- Logger[F].info(s"Finished fetching StackExchange sites at page: $page")
-      } yield sites
-    }
-
-    for {
-      sites <- Stream.fromIterator(Iterator.from(1)).evalMap(sites).takeWhile(_.has_more)
-      site <- Stream.fromIterator(sites.items.iterator)
-    } yield site
   }
 
   private def normalize(string: String): String = string.toLowerCase.trim.split(" ").mkString(" ")

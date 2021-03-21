@@ -12,6 +12,7 @@ object DependencySettings {
     val refinedVersion = "0.9.20"
     val scalaCacheVersion = "0.28.0"
     val catsRetryVersion = "2.1.0"
+    val kantoCsvVersion = "0.6.1"
 
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -43,12 +44,16 @@ object DependencySettings {
 
       "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
 
+      "com.nrinaudo" %% "kantan.csv-cats" % kantoCsvVersion,
+      "com.nrinaudo" %% "kantan.csv-generic" % kantoCsvVersion,
+
       "com.softwaremill.macwire" %% "macros" % macwireVersion % "provided",
       "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % "provided",
       "com.softwaremill.macwire" %% "util" % macwireVersion,
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
 
-      "org.scalatest" %% "scalatest" % "3.2.5" % "test"
+      "org.scalatest" %% "scalatest" % "3.2.5"  % Test,
+      "com.codecommit" %% "cats-effect-testing-scalatest" % "0.5.1" % Test
     )
   }
 }
