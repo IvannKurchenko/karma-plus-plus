@@ -47,7 +47,7 @@ object KarmaRedditPageToken {
   }
 }
 
-case class KarmaFeedPageToken(page: Int, reddit: KarmaRedditPageToken)
+case class KarmaFeedPageToken(page: Int, reddit: Option[KarmaRedditPageToken])
 
 /**
  * Page token stored in URL query parameters, that's why it should short string with NO URI conflicting chars like
@@ -60,15 +60,15 @@ object KarmaFeedPageToken {
       Try {
         val split = token.split(";")
         val page = split(0).toInt
-        val reddit = split(1)
-        KarmaFeedPageToken(page, KarmaRedditPageToken.parse(reddit))
+        val reddit = split.lift(1).map(KarmaRedditPageToken.parse)
+        KarmaFeedPageToken(page, reddit)
       }
     }
   }
 
   implicit val encoder: Encoder[KarmaFeedPageToken] = {
     Encoder[String].contramap { token =>
-      val redditTokens = KarmaRedditPageToken.format(token.reddit)
+      val redditTokens = token.reddit.map(KarmaRedditPageToken.format).getOrElse("")
       s"${token.page};$redditTokens"
     }
   }

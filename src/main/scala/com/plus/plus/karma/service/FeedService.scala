@@ -35,7 +35,7 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
     } yield {
       val (redditToken, redditFeedItems) = reddit
       val items = (github ++ redditFeedItems ++ stackExchange).sortBy(_.created).reverse
-      val token = if(nextTokenExists) Some(KarmaFeedPageToken(nextPage, redditToken)) else None
+      val token = if(nextTokenExists) Some(KarmaFeedPageToken(nextPage, Some(redditToken))) else None
       KarmaFeed(items, token)
     }
   }
@@ -58,7 +58,8 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
       items.map(_.name).traverse { subRedditName =>
         val subredditPageToken = for {
           pageToken <- request.pageToken
-          subRedditToken <- pageToken.token.reddit.tokens.get(subRedditName)
+          redditToken <- pageToken.token.reddit
+          subRedditToken <- redditToken.tokens.get(subRedditName)
         } yield {
           val (before, after) = subRedditToken
           val forward = pageToken.forward
