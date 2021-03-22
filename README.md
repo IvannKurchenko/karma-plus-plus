@@ -38,7 +38,7 @@ Run `sbt run` and open in a browser `http://localhost:8080`<br>
 ### How to build Docker container
 Make sure you built Angular frontend first and then run `sbt docker:publishLocal`
 Find built image: `ikurchenko/karmaplusplus:latest`
-Which you can run with `docker run -p 8080:80 ikurchenko/karmaplusplus`
+Which you can run with `docker run -p 8080:8080 ikurchenko/karmaplusplus`
 
 ### Contribution
 Any contribution to the project more than welcome: issues reports, feature suggestions etc.
