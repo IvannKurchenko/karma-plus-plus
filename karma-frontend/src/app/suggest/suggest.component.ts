@@ -30,11 +30,14 @@ export class SuggestComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      let request = QueryParametersModel.parseFeedRequest(params);
-      if(request.items.length > 0) {
-        this.suggestApiService.searchSuggestions(request).subscribe(
-          suggestions => this.selectedSuggestions = suggestions.items
-        );
+      let queryNotEmpty = params != null && Object.keys(params).length != 0;
+      if (queryNotEmpty) {
+        let request = QueryParametersModel.parseFeedRequest(params);
+        if (request.items.length > 0) {
+          this.suggestApiService.searchSuggestions(request).subscribe(
+            suggestions => this.selectedSuggestions = suggestions.items
+          );
+        }
       }
     });
   }
@@ -61,7 +64,7 @@ export class SuggestComponent implements OnInit {
   }
 
   add(suggestion: SuggestItemApiModel): void {
-      this.selectedSuggestions.push(suggestion);
+    this.selectedSuggestions.push(suggestion);
   }
 
   remove(suggestion: SuggestItemApiModel): void {

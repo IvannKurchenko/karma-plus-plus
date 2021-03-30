@@ -12,6 +12,7 @@ class StackExchangeTagsLoaderSpec extends AsyncFreeSpec with AsyncIOSpec with Ma
     "load tags from resources" in {
       loader.load.asserting { tags =>
         tags.prefixSearch("c").size shouldBe 2
+        tags.prefixSearch("java").map(_.name) shouldBe Seq("java")
       }
     }
   }

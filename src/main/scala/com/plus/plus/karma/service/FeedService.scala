@@ -50,11 +50,11 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
     languages.map(feed).getOrElse(empty)
   }
 
-  //TODO: REFACTOR THIS!
   private def redditFeed(request: KarmaFeedRequest): F[(KarmaRedditPageToken, List[KarmaFeedItem])] = {
     val items = request.source(KarmaFeedItemSources.Reddit)
-    if(items.nonEmpty) {
-      items.map(_.name).traverse { subRedditName =>
+
+    val posts = for {
+      result <- items.map(_.name).traverse { subRedditName =>
         val subredditPageToken = for {
           pageToken <- request.pageToken
           redditToken <- pageToken.token.reddit
@@ -62,39 +62,36 @@ class FeedService[F[_] : Sync : ContextShift : Timer](githubService: GithubServi
         } yield {
           val (before, after) = subRedditToken
           val forward = pageToken.forward
-          val token = if(forward) after else before
+          val token = if (forward) after else before
           SubredditPagination(token, forward)
         }
 
         redditService.subredditsPosts(subRedditName, pageSize, subredditPageToken).map { listing =>
           val before = listing.data.children.headOption.map(_.data.name)
           val after = listing.data.children.lastOption.map(_.data.name)
-          (subRedditName -> (before -> after), listing.data.children.map(_.data.asKarmaFeedItem))
+          val items = listing.data.children.map(_.data.asKarmaFeedItem)
+          (subRedditName, before, after, items)
         }
-      }.map { result =>
-        val items = result.flatMap {
-          case (_, items) => items
-        }
-
-        val tokens = result.collect {
-          case ((subRedditName, (Some(before), Some(after))), _) => (subRedditName, (before, after))
-        }.toMap
-
-        KarmaRedditPageToken(tokens) -> items
       }
-    } else {
-      (KarmaRedditPageToken(Map()) -> List.empty[KarmaFeedItem]).pure
+    } yield {
+      val items = result.flatMap {
+        case (_, _, _, items) => items
+      }
+
+      val tokens = result.collect {
+        case (subRedditName, Some(before), Some(after), _) => subRedditName -> (before -> after)
+      }.toMap
+
+      KarmaRedditPageToken(tokens) -> items
     }
+
+    if(items.nonEmpty) posts else (KarmaRedditPageToken(Map.empty) -> List.empty[KarmaFeedItem]).pure
   }
 
   private def stackExchangeFeed(page: Int, request: KarmaFeedRequest): F[List[KarmaFeedItem]] = {
     val items = request.source(KarmaFeedItemSources.StackExchange)
-
-    if (items.nonEmpty) {
-      items.traverse(item => stackExchangeService.questions(page, pageSize, item.subSource, item.name)).
-        map(_.flatMap(_.items.map(_.asKarmaFeedItem)))
-    } else {
-      empty
-    }
+    val questions = items.traverse(item => stackExchangeService.questions(page, pageSize, item.subSource, item.name)).
+      map(_.flatMap(_.items.map(_.asKarmaFeedItem)).distinct)
+    if (items.nonEmpty) questions else empty
   }
 }
