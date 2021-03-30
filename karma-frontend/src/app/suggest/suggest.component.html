@@ -35,7 +35,9 @@
   </div>
 
   <div class="full-width flex-column">
-    <button mat-raised-button (click)="navigateToFeed()">Create feed</button>
+    <button mat-raised-button
+            (click)="navigateToFeed()"
+            [disabled]="selectedSuggestions.length == 0">Create feed</button>
   </div>
 
   <div>
