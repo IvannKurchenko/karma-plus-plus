@@ -12,7 +12,7 @@ case class KarmaSuggestItem(name: String,
                             description: String,
                             source: KarmaFeedItemSource,
                             site: URI,
-                            subSource: String)//TODO FIX - should be made for specific SE case only
+                            subSource: Option[String])
 
 object KarmaSuggestItem {
   implicit val codec: Codec[KarmaSuggestItem] = deriveCodec

@@ -15,7 +15,7 @@ case class GithubLanguageIndex(index: Map[String, GithubLanguage]) {
         description = description,
         source = KarmaFeedItemSources.Github,
         site = GithubLanguageIndex.githubSite,
-        subSource = ""
+        subSource = None
       )
     }
   }

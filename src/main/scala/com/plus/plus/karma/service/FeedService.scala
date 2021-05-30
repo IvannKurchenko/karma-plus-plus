@@ -1,6 +1,5 @@
 package com.plus.plus.karma.service
 
-import cats.Applicative
 import cats.data.NonEmptyList
 import cats.syntax.all._
 import cats.effect._

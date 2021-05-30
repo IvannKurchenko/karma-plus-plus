@@ -13,7 +13,7 @@ case class RedditAutocompleteItem(numSubscribers: Int, name: String, id: String)
       description = s"Subreddit with $numSubscribers subscribers",
       source = KarmaFeedItemSources.Reddit,
       site = RedditAutocompleteItem.redditSite,
-      subSource = ""
+      subSource = None
     )
   }
 }

@@ -14,7 +14,7 @@ case class SiteStackExchangeTag(site: URI, name: String, api: String, tag: Stack
       description = s"Tag from ${name} with ${tag.count} posts",
       source = KarmaFeedItemSources.StackExchange,
       site = site,
-      subSource = api,
+      subSource = Some(api),
     )
   }
 }

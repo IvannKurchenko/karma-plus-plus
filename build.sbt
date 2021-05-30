@@ -11,12 +11,4 @@ lazy val root = (project in file("."))
     scalacOptions := Seq("-Xlint", "-Ymacro-annotations"),
     scalaVersion := "2.13.4",
     mainClass := Some("com.plus.plus.karma.KarmaApp")
-
-    /*
-    FIXME: error: not found: value versionReconciliation
-    versionReconciliation ++= Seq(
-      "org.typelevel" %% "cats-core" % "relaxed", // "semver" reconciliation is also available
-      "*" % "*" % "strict"
-    )
-    */
   )
